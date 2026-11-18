@@ -54,7 +54,7 @@ Target: 4–6 pages or 6–8 slides. Keep it plain and visual. Wording: say "a f
 - Original tilted export vs the levelled model in the app (clearest on the floor mattress, tilted about 43°).
 
 ## 9. Links
-- Live demo: [GitHub Pages URL]
-- Source: [GitHub repo URL]
+- Live demo: https://mzee04.github.io/nogapnight/
+- Source: https://github.com/Mzee04/nogapnight
 - Demo video: [YouTube / video URL]
 - Aholo Lux3D: https://3d.aholo.ai/lux3d/home

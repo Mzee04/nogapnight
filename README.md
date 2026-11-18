@@ -164,7 +164,7 @@ Foot-based mattress presets (6 × 6, 6 × 4½, 6 × 3½ ft) are common market si
 3D models generated with [Aholo Lux3D](https://www.aholo.ai/) (Manycore). Rendering with [three.js](https://threejs.org/) (MIT).
 
 ## Links
-- Live demo: [Demo link — live app]
-- Source: [Repo link]
+- Live demo: https://mzee04.github.io/nogapnight/
+- Source: https://github.com/Mzee04/nogapnight
 - Demo video: [YouTube / video URL]
 - Aholo Lux3D: https://3d.aholo.ai/lux3d/home
