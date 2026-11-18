@@ -45,6 +45,11 @@ scene in the demo is the user's own room rather than a generic box. Workflow:
 
 Until a GLB is loaded, procedural stand-in models (bed, floor mattress, crib) are used.
 
+A real Lux3D model is included: **My bed (Lux3D)** in the Scene row loads `assets/models/bed-lux3d.glb`
+("Bed With Bedding" — a single bed with a headboard, frame and messy sheet), scaled to a rough estimate of
+100 × 190 cm, mattress top about 45 cm. The app uses a web-optimized copy (~4.1 MB). The original Lux3D export
+is kept beside it as `bed-lux3d-original.glb` (26.8 MB) and is not loaded at runtime.
+
 ## Run it
 No build step. Any static file server works:
 
@@ -63,7 +68,8 @@ See [`assets/models/README.md`](assets/models/README.md).
 
 ### Screenshots / smoke test
 `tests/shots.py` (Playwright + Chrome) loads the app, clicks through the scenes, Fix my room, the size card, PNG/text export,
-a GLB load and a phone viewport, saves images to `shots/`, and prints any console errors.
+a GLB load and a phone viewport, saves images to `shots/`, and prints any console errors. `tests/shots-lux3d.py` loads the
+My bed (Lux3D) preset and saves `shots/10-lux3d-bed-gaps.png`, `shots/11-lux3d-bed-fixed.png` and 480p copies.
 
 ```bash
 python3 -m http.server 8765 &

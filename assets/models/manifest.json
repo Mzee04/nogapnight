@@ -1,1 +1,15 @@
-{ "models": [] }
+{
+  "models": [
+    {
+      "file": "bed-lux3d.glb",
+      "name": "My bed (Lux3D) · 100 × 190 cm (rough estimate)",
+      "kind": "bed",
+      "length": 190,
+      "width": 100,
+      "top": 45,
+      "credit": "Generated with Aholo Lux3D",
+      "sourceName": "Bed With Bedding",
+      "note": "Rough estimate of a single bed (about 100 × 190 cm, mattress top about 45 cm). Web-optimized from the original Lux3D GLB (bed-lux3d-original.glb, 26.8 MB)."
+    }
+  ]
+}
