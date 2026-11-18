@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>No Gap Night · hang your mosquito net with no gaps</title>
   <meta name="description" content="Photograph your bed, turn it into 3D with Aholo Lux3D, drape a standard mosquito net over it and see every gap glow red. Get a carpenter card for the frame." />
+  <meta property="og:title" content="No Gap Night" />
+  <meta property="og:description" content="See every gap in your mosquito net, in 3D. Photo → Aholo Lux3D → net check → size card." />
   <meta name="theme-color" content="#070b1a" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>" />
   <link rel="stylesheet" href="css/style.css" />
@@ -20,17 +22,44 @@
 <body>
   <div id="app">
     <div id="viewport"><canvas id="c" aria-label="3D view of the room and nets"></canvas>
+      <canvas id="cmp-canvas" aria-hidden="true"></canvas>
       <div id="labels"></div>
+      <div id="cmp" hidden>
+        <div id="cmp-handle" role="slider" tabindex="0" aria-label="Drag to compare before and after Fix my room" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <div class="cmp-line"></div>
+          <div class="cmp-knob">◀ ▶</div>
+          <div class="cmp-badge before" id="cmp-before"></div>
+          <div class="cmp-badge after" id="cmp-after"></div>
+        </div>
+      </div>
       <div id="drop-hint" hidden>Drop your Lux3D .glb here</div>
       <div id="hud">
         <div class="hud-score" id="room-score"><span class="num">--</span><span class="lbl">room score</span></div>
         <div class="hud-stats"><span>🦟 sneak-ins <b id="st-sneak">0</b></span><span>💥 bonks off the net <b id="st-bonk">0</b></span></div>
       </div>
       <div id="view-btns">
-        <button id="btn-orbit" class="chip on" title="Slow camera orbit">⟳ Orbit</button>
-        <button id="btn-drop" class="chip" title="Replay the net drop">⬇ Drop nets</button>
+        <button id="btn-compare" class="chip" title="Split-screen: before and after Fix my room">◧ <span class="t">Before / after</span></button>
+        <button class="chip btn-journey" title="Photo → Aholo Lux3D → net check">📷 <span class="t">Photo → 3D → net</span></button>
+        <button id="btn-orbit" class="chip on" title="Slow camera orbit">⟳ <span class="t">Orbit</span></button>
+        <button id="btn-drop" class="chip" title="Replay the net drop">⬇ <span class="t">Drop nets</span></button>
       </div>
-      <div id="loading">Lighting the room…</div>
+      <div id="onboard" hidden>
+        <ol>
+          <li data-step="1" class="now"><span class="n">1</span><span><b>Pick a sleeping place</b> from Scene, or drop your Lux3D .glb here</span></li>
+          <li data-step="2"><span class="n">2</span><span><b>Red glow = a gap</b> where mosquitoes get in</span></li>
+          <li data-step="3"><span class="n">3</span><span><b>✨ Fix my room</b>, then ◧ compare and share the size card</span></li>
+        </ol>
+        <button id="onboard-x" class="chip ghost">Got it</button>
+      </div>
+      <div id="toast" role="status" aria-live="polite" hidden></div>
+      <div id="loading">
+        <div class="intro">
+          <div class="intro-moon">🌙</div>
+          <h1>No Gap Night</h1>
+          <p>See every gap in your mosquito net, in 3D.</p>
+          <div class="intro-steps"><span>Photo</span><i>→</i><span>Aholo Lux3D</span><i>→</i><span>Net check</span><i>→</i><span>Size card</span></div>
+        </div>
+      </div>
       <div id="glb-loading" hidden><div class="spin"></div><b>Generated with Aholo Lux3D</b><span id="glb-loading-name">loading your model…</span></div>
     </div>
 
@@ -39,15 +68,18 @@
       <header>
         <h1>🌙 No Gap Night</h1>
         <p class="tag">Hang your mosquito net with <b>no gaps</b>. Photo → Aholo Lux3D → 3D net check → carpenter card.</p>
+        <button class="chip ghost btn-journey jr-chip">📷 → 🧊 → 🥅 See the photo-to-net journey</button>
       </header>
 
       <section>
         <h2>Scene</h2>
         <div class="row wrap" id="presets">
+          <button data-preset="luxmat" class="chip">My floor mattress (Lux3D)</button>
           <button data-preset="floor" class="chip">Floor mattress, 3 sleepers</button>
           <button data-preset="room" class="chip">One-room night</button>
           <button data-preset="bed" class="chip">Bed</button>
           <button data-preset="luxbed" class="chip">My bed (Lux3D)</button>
+          <button data-preset="luxwood" class="chip">Bed by the wall (Lux3D)</button>
           <button data-preset="crib" class="chip">Crib</button>
         </div>
         <details>
@@ -124,6 +156,7 @@
         <div class="row wrap">
           <button class="chip primary" id="btn-fix">✨ Fix my room</button>
           <button class="chip" id="btn-card">🪚 Size card for your carpenter</button>
+          <button class="chip ghost" id="btn-share" title="Copy a link that opens this exact room and its size card">🔗 Copy link</button>
         </div>
       </section>
 
@@ -135,8 +168,13 @@
   </div>
 
   <dialog id="card-dialog">
-    <div class="dialog-bar"><b>Size card</b><span><button class="chip primary" id="btn-png">⬇ PNG</button> <button class="chip" id="btn-txt">⬇ Text</button> <button class="chip" id="btn-print">🖨 Print</button> <button class="chip" id="btn-close-card">Close</button></span></div>
+    <div class="dialog-bar"><b>Size card</b><span><button class="chip primary" id="btn-png">⬇ PNG</button> <button class="chip" id="btn-txt">⬇ Text</button> <button class="chip" id="btn-print">🖨 Print</button> <button class="chip" id="btn-share-card">🔗 Copy link</button> <button class="chip" id="btn-close-card">Close</button></span></div>
     <div id="print-card"></div>
+  </dialog>
+
+  <dialog id="journey-dialog" class="dark">
+    <div class="dialog-bar"><b>Photo → Aholo Lux3D → Net</b><span><button class="chip" id="btn-close-journey">Close</button></span></div>
+    <div id="journey-body"></div>
   </dialog>
 
   <noscript>No Gap Night needs JavaScript and WebGL.</noscript>

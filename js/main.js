@@ -42,11 +42,34 @@ const PRESETS = {
     })],
     model: { file: 'bed-lux3d.glb', name: 'Bed With Bedding (Lux3D)' },
   }),
+  // Real Aholo Lux3D floor mattress (Patterned Mattress). Size is a rough estimate.
+  // Hero scene: two sleepers (pillow and wrapper lumps), a single net that is too small and hung too high.
+  luxmat: () => ({
+    room: { width: 340, depth: 330, ceiling: 270 },
+    places: [place({
+      name: 'Floor mattress', kind: 'floor', length: 190, width: 120, top: 15, sleepers: 2,
+      x: 170, z: 150, net: 'r100', hookMode: 'manual', hook: 190, tuck: 'mattress',
+    })],
+    model: { file: 'mattress-lux3d.glb', name: 'Patterned Mattress (Lux3D)' },
+  }),
+  // Real Aholo Lux3D wooden double bed with corner posts. Size is a rough estimate.
+  // Pushed tight against the left wall: the net runs into the wall and is too narrow, so gaps glow red.
+  luxwood: () => ({
+    room: { width: 360, depth: 360, ceiling: 270 },
+    places: [place({
+      name: 'Bed by the wall', kind: 'bed', length: 190, width: 140, top: 50, sleepers: 2,
+      x: 72, z: 140, net: 'r160', hookMode: 'manual', hook: 215, tuck: 'mattress',
+    })],
+    model: { file: 'wood-bed-lux3d.glb', name: 'Wooden Bed (Lux3D)' },
+  }),
   crib: () => ({ room: { width: 300, depth: 280, ceiling: 270 },
     places: [place({ name: 'Crib', kind: 'crib', length: 120, width: 60, top: 45, sleepers: 1, x: 150, z: 130, net: 'c850', hookMode: 'manual', hook: 140 })] }),
 };
 
-const state = { ...PRESETS.floor(), selected: null, orbit: true };
+const params = new URLSearchParams(location.search);
+const CLEAN = params.has('clean'); // ?clean: no intro or hints (for screen recording)
+const HERO = 'luxmat';
+const state = { ...PRESETS[HERO](), selected: null, orbit: true, preset: HERO };
 state.selected = state.places[0].id;
 const glbs = new Map(); // place id -> { scene, name }
 let analysis = { results: [], roomScore: 0 };
@@ -80,7 +103,7 @@ controls.enablePan = false;
 controls.minDistance = 1.2;
 controls.maxDistance = 12;
 controls.autoRotateSpeed = 0.5;
-controls.addEventListener('start', () => setOrbit(false));
+controls.addEventListener('start', () => { setOrbit(false); fly = null; });
 
 scene.add(new THREE.HemisphereLight(0x5a6cb0, 0x20160c, 0.9));
 const moon = new THREE.DirectionalLight(0xa9bcff, 1.3);
@@ -170,7 +193,7 @@ function buildRoom() {
   moon.shadow.camera.updateProjectionMatrix();
   lamp.position.set(W * 0.88, H - 0.35, D * 0.88);
   bulb.position.copy(lamp.position);
-  swarm && swarm.setBounds(W, D, H);
+  if (typeof swarmB !== 'undefined') { swarm.setBounds(W, D, H); swarmB.setBounds(W, D, H); }
 }
 
 // ---------- places ----------
@@ -183,15 +206,15 @@ const zTex = (() => {
   g.fillText('z', 32, 34); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 })();
 
-function disposeObj(o) {
+function disposeObj(o, root = placesRoot) {
   if (!o) return;
   o.net && o.net.dispose();
   o.group.traverse((m) => { if (m.isMesh && m.geometry && !m.userData.shared) m.geometry.dispose(); });
-  placesRoot.remove(o.group);
+  root.remove(o.group);
 }
 
-function buildPlace(p, a, drop) {
-  disposeObj(placeObjs.get(p.id));
+function buildPlace(p, a, drop, objs = placeObjs, root = placesRoot) {
+  disposeObj(objs.get(p.id), root);
   const group = new THREE.Group();
   group.position.set(p.x / 100, 0, p.z / 100);
   group.rotation.y = p.rot === 90 ? Math.PI / 2 : 0;
@@ -200,12 +223,14 @@ function buildPlace(p, a, drop) {
   if (g) {
     base = fitGLB(g.scene, p);
     g.heightCm = base.userData.heightCm;
+    // a Lux3D floor mattress or crib has no sleepers in it: add pillow and wrapper lumps (never human figures)
+    if (p.kind !== 'bed') addSleepers(base, p.length / 100, p.width / 100, p.top / 100, p.sleepers);
   } else {
     base = buildPlaceholder(p);
     addSleepers(base, p.length / 100, p.width / 100, p.top / 100, p.sleepers);
   }
   group.add(base);
-  const o = { group, net: null, band: null, overlay: null, zzz: [] };
+  const o = { group, net: null, band: null, overlay: null, zzz: [], top: p.top / 100 };
   if (a.net.type !== 'none') {
     o.net = createNet(p, a);
     group.add(o.net.group);
@@ -220,22 +245,22 @@ function buildPlace(p, a, drop) {
     s.scale.setScalar(0.1);
     group.add(s); o.zzz.push(s);
   }
-  placesRoot.add(group);
-  placeObjs.set(p.id, o);
+  root.add(group);
+  objs.set(p.id, o);
 }
 
-function refreshTargets() {
+function refreshTargets(places = state.places, results = analysis.results, objs = placeObjs, sw = swarm) {
   const gaps = [], nets = [];
   const v = new THREE.Vector3();
-  state.places.forEach((p, i) => {
-    const a = analysis.results[i];
-    const o = placeObjs.get(p.id);
+  places.forEach((p, i) => {
+    const a = results[i];
+    const o = objs.get(p.id);
     if (!o) return;
     o.group.updateMatrixWorld(true);
     for (const t of gapTargets(p, a)) gaps.push(v.set(...t).applyMatrix4(o.group.matrixWorld).clone());
     for (const t of netTargets(p, a)) nets.push(v.set(...t).applyMatrix4(o.group.matrixWorld).clone());
   });
-  swarm.setTargets(gaps, nets);
+  sw.setTargets(gaps, nets);
 }
 
 let prevNetKey = new Map();
@@ -253,6 +278,7 @@ function recompute({ drop = false, rebuildAll = false } = {}) {
   void rebuildAll;
   refreshTargets();
   renderUI();
+  if (cmp.on) buildBefore();
 }
 
 // ---------- UI ----------
@@ -316,7 +342,7 @@ function renderLabels() {
 }
 labelsEl.addEventListener('click', (e) => {
   const el = e.target.closest('.label'); if (!el) return;
-  state.selected = +el.dataset.id; renderUI();
+  selectPlace(+el.dataset.id);
 });
 const tmpV = new THREE.Vector3();
 function positionLabels() {
@@ -337,7 +363,7 @@ function positionLabels() {
 
 $('place-tabs').addEventListener('click', (e) => {
   const b = e.target.closest('[data-id]'); if (!b) return;
-  state.selected = +b.dataset.id; renderUI();
+  selectPlace(+b.dataset.id);
 });
 document.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => {
   const kind = b.dataset.add;
@@ -355,12 +381,15 @@ $('btn-remove').addEventListener('click', () => {
   glbs.delete(p.id);
   state.selected = state.places[0].id; recompute();
 });
-document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => loadPreset(b.dataset.preset)));
+document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => { loadPreset(b.dataset.preset); onboardStep(1); }));
 function loadPreset(name) {
+  if (!PRESETS[name]) return;
   const s = PRESETS[name]();
-  if (!s) return;
+  setCompare(false); before = null;
+  state.preset = name;
   state.room = s.room; state.places = s.places; state.selected = s.places[0].id;
   glbs.clear(); buildRoom(); recompute({ drop: true }); frameCamera(); swarm.resetStats();
+  document.querySelectorAll('#presets [data-preset]').forEach((b) => b.classList.toggle('sel', b.dataset.preset === name));
   if (s.model) loadGLB(`assets/models/${s.model.file}`, s.model.name, state.places[0]);
 }
 
@@ -395,20 +424,27 @@ function bindForm() {
 }
 bindForm();
 
-$('btn-fix').addEventListener('click', () => {
-  state.places.forEach((p) => {
-    if (p.net === 'none' || !NETS[p.net] || analysis.results[state.places.indexOf(p)].uncovered) {
+// Fix my room as a pure step, so the journey card can show before -> after scores for any scene.
+function fixPlaces(room, places, results) {
+  places.forEach((p, i) => {
+    if (p.net === 'none' || !NETS[p.net] || results[i].uncovered) {
       const s = suggestNet(p); if (s) p.net = s.id;
     }
     p.hookMode = 'auto';
-    nudgeFromWalls(p);
+    nudgeFromWalls(p, room);
   });
-  // if a fixed net still can't reach (low ceiling), try a taller/shorter alternative
+}
+function runFix() {
+  if (!before || analysis.roomScore < 100) snapshotBefore();
+  fixPlaces(state.room, state.places, analysis.results);
   recompute({ drop: true });
   swarm.resetStats();
-});
+  onboardStep(3);
+  if (!cmp.on) pulse($('btn-compare'));
+}
+$('btn-fix').addEventListener('click', runFix);
 // keep the whole net footprint inside the room so it can hang straight
-function nudgeFromWalls(p) {
+function nudgeFromWalls(p, room = state.room) {
   const n = NETS[p.net];
   if (!n || n.type === 'none') return;
   let hx, hz;
@@ -416,16 +452,17 @@ function nudgeFromWalls(p) {
   else { hx = hz = Math.hypot(p.width / 2, p.length / 2) + 3; }
   if (p.rot === 90) [hx, hz] = [hz, hx];
   const clamp = (v, lo, hi) => (lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v)));
-  p.x = Math.round(clamp(p.x, hx + 3, state.room.width - hx - 3));
-  p.z = Math.round(clamp(p.z, hz + 3, state.room.depth - hz - 3));
+  p.x = Math.round(clamp(p.x, hx + 3, room.width - hx - 3));
+  p.z = Math.round(clamp(p.z, hz + 3, room.depth - hz - 3));
 }
 $('btn-drop').addEventListener('click', () => { recompute({ drop: true }); });
 $('btn-orbit').addEventListener('click', () => setOrbit(!state.orbit));
 function setOrbit(on) { state.orbit = on; controls.autoRotate = on; $('btn-orbit').classList.toggle('on', on); }
-$('btn-card').addEventListener('click', () => {
+function openCard() {
   $('print-card').innerHTML = renderCard(state.room, state.places, analysis.results);
-  $('card-dialog').showModal();
-});
+  if (!$('card-dialog').open) $('card-dialog').showModal();
+}
+$('btn-card').addEventListener('click', openCard);
 $('btn-close-card').addEventListener('click', () => $('card-dialog').close());
 $('btn-print').addEventListener('click', () => window.print());
 function download(name, href) { const a = document.createElement('a'); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
@@ -442,6 +479,7 @@ $('panel-toggle').addEventListener('click', () => {
 // ---------- GLB loading ----------
 const loader = new GLTFLoader();
 async function loadGLB(url, name, p) {
+  const file = url.startsWith('assets/models/') ? url.slice('assets/models/'.length) : null;
   $('glb-info').textContent = `Loading ${name}…`;
   $('glb-loading-name').textContent = `loading ${name}…`;
   $('glb-loading').hidden = false;
@@ -449,7 +487,8 @@ async function loadGLB(url, name, p) {
   try {
     const gltf = await loader.loadAsync(url);
     await new Promise((r) => setTimeout(r, Math.max(0, 900 - (performance.now() - t0)))); // let the credit be seen
-    glbs.set(p.id, { scene: gltf.scene, name });
+    if (!state.places.includes(p)) return; // scene changed while loading
+    glbs.set(p.id, { scene: gltf.scene, name, file });
     recompute({ drop: true });
   } catch (err) {
     console.warn('GLB load failed', err);
@@ -463,6 +502,7 @@ function loadFile(file) {
   if (!/\.glb$/i.test(file.name)) { $('glb-info').textContent = 'Please use a .glb file (Lux3D → download → GLB).'; return; }
   const url = URL.createObjectURL(file);
   loadGLB(url, file.name, sel());
+  onboardStep(1);
 }
 $('f-glb').addEventListener('change', (e) => { loadFile(e.target.files[0]); e.target.value = ''; });
 $('btn-clear-glb').addEventListener('click', () => { glbs.delete(sel().id); recompute(); });
@@ -491,18 +531,53 @@ $('f-manifest').addEventListener('change', (e) => {
 });
 
 // ---------- camera ----------
-function frameCamera() {
+function framePose(scale = 1) {
   const W = state.room.width / 100, D = state.room.depth / 100;
   const s = Math.max(W, D);
-  controls.target.set(W * 0.5, 0.6, D * 0.5);
-  const dist = s * (isMobile ? 2.1 : 1.5);
-  camera.position.set(W * 0.5 + dist * 0.55, dist * 0.95, D * 0.5 + dist * 0.7);
-  controls.update();
+  const target = new THREE.Vector3(W * 0.5, 0.6, D * 0.5);
+  const dist = s * (isMobile ? 2.1 : 1.5) * scale;
+  const pos = new THREE.Vector3(W * 0.5 + dist * 0.55, dist * 0.95, D * 0.5 + dist * 0.7);
+  return { pos, target };
+}
+function frameCamera(instant = false) {
+  const { pos, target } = framePose();
+  if (instant) { fly = null; camera.position.copy(pos); controls.target.copy(target); controls.update(); }
+  else flyTo(pos, target, 1.1);
+}
+// smooth camera moves (eased), used for presets, the intro and selecting a sleeping place
+let fly = null;
+function flyTo(pos, target, dur = 1.1) {
+  fly = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), start: performance.now(), dur: dur * 1000 };
+}
+function stepFly() {
+  if (!fly) return;
+  const k = Math.min(1, (performance.now() - fly.start) / fly.dur);
+  const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  camera.position.lerpVectors(fly.p0, fly.p1, e);
+  controls.target.lerpVectors(fly.t0, fly.t1, e);
+  if (k >= 1) fly = null;
+}
+function focusPlace(p) {
+  const target = new THREE.Vector3(p.x / 100, Math.max(0.3, p.top / 100 + 0.2), p.z / 100);
+  const span = Math.max(p.length, p.width) / 100;
+  const dist = span * (isMobile ? 2.8 : 2.2) + 1.7;
+  const dir = camera.position.clone().sub(controls.target); dir.y = 0;
+  if (dir.lengthSq() < 1e-4) dir.set(0.6, 0, 0.8);
+  dir.normalize();
+  const pos = target.clone().addScaledVector(dir, dist * 0.62); pos.y += dist * 0.8;
+  flyTo(pos, target, 1.0);
+}
+function selectPlace(id) {
+  state.selected = id; renderUI();
+  const p = sel();
+  if (state.places.length > 1) focusPlace(p); else frameCamera();
 }
 
 // ---------- loop ----------
 const swarm = new Swarm(scene, isMobile ? 24 : 40);
 swarm.onStats = (s) => { $('st-sneak').textContent = s.sneak; $('st-bonk').textContent = s.bonk; };
+const swarmB = new Swarm(scene, isMobile ? 16 : 28); // the "before" side of the compare wipe
+swarmB.points.visible = false;
 
 function resize() {
   const r = canvas.parentElement.getBoundingClientRect();
@@ -512,6 +587,8 @@ function resize() {
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   swarm.setPixelScale(h * renderer.getPixelRatio() * 0.13);
+  swarmB.setPixelScale(h * renderer.getPixelRatio() * 0.13);
+  cmpCanvas.width = canvas.width; cmpCanvas.height = canvas.height;
 }
 window.addEventListener('resize', resize);
 
@@ -519,15 +596,15 @@ const clock = new THREE.Clock();
 function tick() {
   const dt = Math.min(0.05, clock.getDelta());
   const t = clock.elapsedTime;
+  stepFly();
   controls.update();
-  for (const o of placeObjs.values()) {
+  for (const o of [...placeObjs.values(), ...(cmp.on ? beforeObjs.values() : [])]) {
     if (o.net) o.net.update(t, dt);
     if (o.band) o.band.material.uniforms.uTime.value = t;
     if (o.overlay) o.overlay.userData.time.value = t;
     o.zzz.forEach((s, k) => {
       const ph = ((t * 0.35 + s.userData.seed + k * 0.33) % 1);
-      const p = state.places.find((q) => placeObjs.get(q.id) === o);
-      const top = p ? p.top / 100 : 0.5;
+      const top = o.top ?? 0.5;
       s.position.set(s.userData.x + Math.sin(ph * 6) * 0.05, top + 0.25 + ph * 0.5, s.userData.z);
       s.material.opacity = Math.sin(ph * Math.PI) * 0.8;
       s.scale.setScalar(0.06 + ph * 0.08);
@@ -535,20 +612,272 @@ function tick() {
   }
   swarm.update(dt, t);
   bulb.material.color.setHSL(0.09, 1, 0.75 + Math.sin(t * 2) * 0.02);
+  if (cmp.on) renderBefore(dt, t);
   composer.render();
   positionLabels();
   requestAnimationFrame(tick);
 }
 
+// ---------- before / after compare (split-screen wipe) ----------
+// The "before" scene is a snapshot of the sleeping places taken just before Fix my room. Each frame we render it,
+// copy the frame into an overlay canvas clipped to the left of the slider, then render the fixed room underneath.
+const beforeRoot = new THREE.Group();
+beforeRoot.visible = false;
+scene.add(beforeRoot);
+const beforeObjs = new Map();
+let before = null; // { places, analysis }
+const cmp = { on: false, x: 0.5, anim: null };
+const cmpCanvas = $('cmp-canvas');
+const cmpCtx = cmpCanvas.getContext('2d');
+
+function snapshotBefore() { before = { places: state.places.map((p) => ({ ...p })), analysis: null }; }
+function clearBefore() { for (const o of beforeObjs.values()) disposeObj(o, beforeRoot); beforeObjs.clear(); }
+function buildBefore() {
+  if (!before) return;
+  clearBefore();
+  before.analysis = analyzeRoom(state.room, before.places);
+  before.places.forEach((p, i) => buildPlace(p, before.analysis.results[i], false, beforeObjs, beforeRoot));
+  refreshTargets(before.places, before.analysis.results, beforeObjs, swarmB);
+  renderCompareUI();
+}
+function renderBefore() {
+  placesRoot.visible = false; swarm.points.visible = false;
+  beforeRoot.visible = true; swarmB.points.visible = true;
+  composer.render();
+  cmpCtx.clearRect(0, 0, cmpCanvas.width, cmpCanvas.height);
+  cmpCtx.drawImage(canvas, 0, 0, cmpCanvas.width, cmpCanvas.height);
+  placesRoot.visible = true; swarm.points.visible = true;
+  beforeRoot.visible = false; swarmB.points.visible = false;
+}
+const lvlOf = (s) => (s >= 85 ? 'good' : s >= 50 ? 'fix' : 'bad');
+function renderCompareUI() {
+  if (!before || !before.analysis) return;
+  const b = before.analysis.roomScore, a = analysis.roomScore;
+  $('cmp-before').innerHTML = `<small>Before</small><b class="lvl-${lvlOf(b)}">${b}</b>`;
+  $('cmp-after').innerHTML = `<small>After</small><b class="lvl-${lvlOf(a)}">${a}</b>`;
+}
+function setCmpX(x) {
+  cmp.x = Math.min(0.98, Math.max(0.02, x));
+  $('viewport').style.setProperty('--x', `${(cmp.x * 100).toFixed(2)}%`);
+  $('cmp-handle').setAttribute('aria-valuenow', Math.round(cmp.x * 100));
+}
+function setCompare(on) {
+  if (on === cmp.on) return;
+  if (on) {
+    if (analysis.roomScore < 100) runFix();
+    else if (!before) { toast('This room already scores 100. Load a scene with gaps to compare before and after.'); return; }
+    cmp.on = true;
+    buildBefore();
+    swarmB.resetStats();
+    $('cmp').hidden = false;
+    document.body.classList.add('comparing');
+    // sweep in from the right so the "before" room is revealed on camera
+    const t0 = performance.now();
+    cancelAnimationFrame(cmp.anim);
+    const sweep = (now) => {
+      const k = Math.min(1, (now - t0) / 1300);
+      const e = 1 - Math.pow(1 - k, 3);
+      setCmpX(0.98 + (0.5 - 0.98) * e);
+      if (k < 1) cmp.anim = requestAnimationFrame(sweep);
+    };
+    setCmpX(0.98);
+    cmp.anim = requestAnimationFrame(sweep);
+  } else {
+    cmp.on = false;
+    cancelAnimationFrame(cmp.anim);
+    $('cmp').hidden = true;
+    document.body.classList.remove('comparing');
+    clearBefore();
+  }
+  $('btn-compare').classList.toggle('on', cmp.on);
+}
+$('btn-compare').addEventListener('click', () => setCompare(!cmp.on));
+(() => {
+  const h = $('cmp-handle');
+  const move = (e) => { const r = $('cmp').getBoundingClientRect(); cancelAnimationFrame(cmp.anim); setCmpX((e.clientX - r.left) / r.width); };
+  h.addEventListener('pointerdown', (e) => { h.setPointerCapture(e.pointerId); h.classList.add('drag'); move(e); e.preventDefault(); });
+  h.addEventListener('pointermove', (e) => { if (h.hasPointerCapture(e.pointerId)) move(e); });
+  const end = (e) => { if (h.hasPointerCapture(e.pointerId)) h.releasePointerCapture(e.pointerId); h.classList.remove('drag'); };
+  h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
+  h.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { setCmpX(cmp.x - 0.05); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { setCmpX(cmp.x + 0.05); e.preventDefault(); }
+    if (e.key === 'Escape') setCompare(false);
+  });
+})();
+
+// ---------- toast + pulse ----------
+let toastTimer = 0;
+function toast(html, ms = 3200) {
+  const t = $('toast');
+  t.innerHTML = html; t.hidden = false;
+  requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); setTimeout(() => { t.hidden = true; }, 300); }, ms);
+}
+function pulse(el) { if (!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+
+// ---------- share link (room setup in the URL hash) ----------
+const SHARE_KEYS = ['name', 'kind', 'length', 'width', 'top', 'sleepers', 'x', 'z', 'rot', 'net', 'tuck', 'hookMode', 'hook'];
+const b64url = (str) => btoa(String.fromCharCode(...new TextEncoder().encode(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64url = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0)));
+function encodeShare(withCard = false) {
+  const d = {
+    v: 1,
+    r: [state.room.width, state.room.depth, state.room.ceiling],
+    p: state.places.map((p) => SHARE_KEYS.map((k) => (k === 'hook' ? Math.round(p.hook) : p[k]))),
+    m: state.places.map((p) => { const g = glbs.get(p.id); return g && g.file ? [g.file, g.name] : 0; }),
+    s: Math.max(0, state.places.indexOf(sel())),
+  };
+  if (withCard) d.c = 1;
+  return `#s=${b64url(JSON.stringify(d))}`;
+}
+function readShare() {
+  const m = /[#&]s=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (!m) return null;
+  try {
+    const d = JSON.parse(unb64url(m[1]));
+    if (!d || d.v !== 1 || !Array.isArray(d.r) || !Array.isArray(d.p) || !d.p.length) return null;
+    return d;
+  } catch (e) { return null; }
+}
+function applyShare(d) {
+  const n = (v, lo, hi, def) => (Number.isFinite(+v) ? Math.min(hi, Math.max(lo, +v)) : def);
+  const room = { width: n(d.r[0], 150, 1000, 340), depth: n(d.r[1], 150, 1000, 320), ceiling: n(d.r[2], 180, 500, 270) };
+  const places = d.p.slice(0, 8).map((a) => {
+    const o = Object.fromEntries(SHARE_KEYS.map((k, i) => [k, a[i]]));
+    return place({
+      name: String(o.name || 'Sleeping place').slice(0, 24),
+      kind: ['bed', 'floor', 'crib'].includes(o.kind) ? o.kind : 'bed',
+      length: n(o.length, 50, 260, 190), width: n(o.width, 40, 260, 135), top: n(o.top, 5, 120, 45),
+      sleepers: Math.round(n(o.sleepers, 0, 4, 1)), x: n(o.x, 0, room.width, room.width / 2), z: n(o.z, 0, room.depth, room.depth / 2),
+      rot: +o.rot === 90 ? 90 : 0, net: NETS[o.net] ? o.net : 'none', tuck: o.tuck === 'floor' ? 'floor' : 'mattress',
+      hookMode: o.hookMode === 'manual' ? 'manual' : 'auto', hook: n(o.hook, 80, 500, 180),
+    });
+  });
+  setCompare(false); before = null;
+  state.preset = null;
+  state.room = room; state.places = places;
+  state.selected = (places[d.s] || places[0]).id;
+  glbs.clear(); buildRoom(); recompute({ drop: true }); swarm.resetStats();
+  document.querySelectorAll('#presets [data-preset]').forEach((b) => b.classList.remove('sel'));
+  (Array.isArray(d.m) ? d.m : []).forEach((mm, i) => {
+    if (!Array.isArray(mm) || !places[i] || !/^[\w.-]+\.glb$/.test(mm[0])) return;
+    loadGLB(`assets/models/${mm[0]}`, String(mm[1] || mm[0]).slice(0, 60), places[i]);
+  });
+  toast('Opened a shared room. Scores are <b>a first estimate</b> from the sizes in the link.');
+}
+window.addEventListener('hashchange', () => { const d = readShare(); if (d) { applyShare(d); frameCamera(); if (d.c) setTimeout(openCard, 400); } });
+async function copyLink(withCard = false) {
+  const url = `${location.href.split('#')[0]}${encodeShare(withCard)}`;
+  history.replaceState(null, '', url);
+  let ok = false;
+  try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(url); ok = true; } } catch (e) { ok = false; }
+  if (ok) toast(`🔗 <b>Link copied.</b> Whoever opens it sees this room${withCard ? ' and its size card' : ''}.`);
+  else {
+    toast(`<b>Copy this link:</b><input id="share-url" readonly value="${escapeHtml(url)}">`, 9000);
+    const i = $('share-url'); if (i) { i.focus(); i.select(); }
+  }
+}
+$('btn-share').addEventListener('click', () => copyLink(false));
+$('btn-share-card').addEventListener('click', () => copyLink(true));
+
+// ---------- onboarding: 3-step first-view hint ----------
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } } };
+let onboardDone = CLEAN || store.get('ngn-onboarded') === '1';
+function showOnboard() { if (!onboardDone) { $('onboard').hidden = false; requestAnimationFrame(() => $('onboard').classList.add('show')); } }
+function hideOnboard() {
+  onboardDone = true; store.set('ngn-onboarded', '1');
+  const el = $('onboard'); el.classList.remove('show'); setTimeout(() => { el.hidden = true; }, 350);
+}
+function onboardStep(n) {
+  if (onboardDone) return;
+  document.querySelectorAll('#onboard li').forEach((li) => {
+    const k = +li.dataset.step;
+    if (k <= n) li.classList.add('done');
+    li.classList.toggle('now', k === n + 1);
+  });
+  if (n >= 3) setTimeout(hideOnboard, 3500);
+}
+$('onboard-x').addEventListener('click', hideOnboard);
+
+// ---------- Photo -> Lux3D -> Net journey card (driven by assets/models/manifest.json) ----------
+function journeyScores(m) {
+  let room, places;
+  if (m.journey.scene && PRESETS[m.journey.scene]) ({ room, places } = PRESETS[m.journey.scene]());
+  else { room = { width: 340, depth: 320, ceiling: 270 }; places = [place({ kind: m.kind || 'bed', length: m.length || 190, width: m.width || 135, top: m.top || 45, sleepers: 1, x: 170, z: 150, net: 'none' })]; }
+  const b = analyzeRoom(room, places);
+  fixPlaces(room, places, b.results);
+  const a = analyzeRoom(room, places);
+  return { before: b.roomScore, after: a.roomScore, net: NETS[places[0].net]?.label };
+}
+let journeyIdx = 0;
+function renderJourney() {
+  const list = manifest.filter((m) => m.journey);
+  const box = $('journey-body');
+  if (!list.length) { box.innerHTML = '<p class="hint">No journeys listed in assets/models/manifest.json yet.</p>'; return; }
+  journeyIdx = Math.min(journeyIdx, list.length - 1);
+  const m = list[journeyIdx], j = m.journey;
+  const sc = journeyScores(m);
+  const tabs = list.length > 1 ? `<div class="row wrap jr-tabs">${list.map((x, i) => `<button class="chip ${i === journeyIdx ? 'sel' : ''}" data-j="${i}">${escapeHtml(x.journey.title || x.name)}</button>`).join('')}</div>` : '';
+  box.innerHTML = `${tabs}
+    <div class="jr">
+      <figure><div class="jr-img photo"><img src="${escapeHtml(j.photo)}" alt="Phone photo of the real sleeping place"></div>
+        <figcaption><span class="n">1</span><b>Your photo</b><span>One phone photo of the real place you sleep</span></figcaption></figure>
+      <div class="jr-arrow" aria-hidden="true">→</div>
+      <figure><div class="jr-img lux"><img src="${escapeHtml(j.lux3d)}" alt="The 3D model Aholo Lux3D generated from the photo"><span class="jr-credit">Generated with Aholo Lux3D</span></div>
+        <figcaption><span class="n">2</span><b>Aholo Lux3D model</b><span>${j.lux3dNote ? escapeHtml(j.lux3dNote) : `“${escapeHtml(m.sourceName || m.name)}”, a GLB from one photo`}</span></figcaption></figure>
+      <div class="jr-arrow" aria-hidden="true">→</div>
+      <figure><div class="jr-img"><img src="${escapeHtml(j.result)}" alt="The model in No Gap Night with the net draped over it"><span class="jr-score"><b class="lvl-${lvlOf(sc.before)}">${sc.before}</b> → <b class="lvl-${lvlOf(sc.after)}">${sc.after}</b></span></div>
+        <figcaption><span class="n">3</span><b>Net check</b><span>Red gaps found, then fixed with ${escapeHtml(sc.net || 'a standard net')}</span></figcaption></figure>
+    </div>
+    <div class="row wrap jr-foot"><button class="chip primary" id="jr-open">Open this in 3D</button>
+      <span class="hint">Sizes are a rough estimate (${m.width} × ${m.length} cm), so the score is a first estimate. Model: <a href="https://3d.aholo.ai/lux3d/home" target="_blank" rel="noopener">Aholo Lux3D</a>.</span></div>`;
+}
+$('journey-body').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-j]');
+  if (t) { journeyIdx = +t.dataset.j; renderJourney(); return; }
+  if (e.target.closest('#jr-open')) {
+    const m = manifest.filter((x) => x.journey)[journeyIdx];
+    $('journey-dialog').close();
+    if (m.journey.scene && PRESETS[m.journey.scene]) loadPreset(m.journey.scene);
+    else { const p = sel(); Object.assign(p, { kind: m.kind || p.kind, length: m.length || p.length, width: m.width || p.width, top: m.top || p.top }); loadGLB(`assets/models/${m.file}`, m.name || m.file, p); }
+  }
+});
+function openJourney() {
+  const list = manifest.filter((m) => m.journey);
+  const cur = list.findIndex((m) => m.journey.scene === state.preset);
+  if (cur >= 0) journeyIdx = cur;
+  renderJourney();
+  $('journey-dialog').showModal();
+}
+document.querySelectorAll('.btn-journey').forEach((b) => b.addEventListener('click', openJourney));
+$('btn-close-journey').addEventListener('click', () => $('journey-dialog').close());
+
 buildRoom();
 resize();
-frameCamera();
+const shared = readShare();
+if (shared) applyShare(shared);
+else {
+  recompute({ drop: true });
+  document.querySelector(`#presets [data-preset=${HERO}]`)?.classList.add('sel');
+  const m = PRESETS[HERO]().model;
+  loadGLB(`assets/models/${m.file}`, m.name, state.places[0]);
+}
+// title intro: start wide and high, then glide in
+if (CLEAN) frameCamera(true);
+else {
+  const far = framePose(1.7); far.pos.y += 1.5;
+  camera.position.copy(far.pos); controls.target.copy(far.target); controls.update();
+  const { pos, target } = framePose();
+  setTimeout(() => flyTo(pos, target, 2.4), 250);
+}
 setOrbit(true);
-recompute({ drop: true });
 requestAnimationFrame(tick);
-setTimeout(() => $('loading').classList.add('done'), 300);
-setTimeout(() => { $('loading').hidden = true; }, 1000);
+setTimeout(() => $('loading').classList.add('done'), CLEAN ? 300 : 2300);
+setTimeout(() => { $('loading').hidden = true; showOnboard(); }, CLEAN ? 1000 : 3000);
 if (isMobile) { $('panel').classList.add('collapsed'); document.body.classList.add('panel-collapsed'); }
+if (shared && shared.c) setTimeout(openCard, CLEAN ? 600 : 3100);
 
 // handy for tests / debugging
-window.__ngn = { state, get analysis() { return analysis; }, recompute, loadPreset, placeObjs, scene };
+window.__ngn = { state, get analysis() { return analysis; }, recompute, loadPreset, placeObjs, scene, setCompare, cmp, encodeShare, get before() { return before; } };

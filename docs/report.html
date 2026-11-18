@@ -404,6 +404,8 @@
   figcaption strong { color: var(--ink); font-weight: 600; }
 
   .shot-tall { height: 88mm; object-fit: cover; object-position: 20% 50%; }
+  .shot-ph { height: 40mm; object-fit: cover; object-position: 45% 50%; }
+  .shot-journey { height: 52mm; object-fit: cover; object-position: 50% 50%; }
   .shot-wide { height: 78mm; object-fit: cover; object-position: 30% 50%; }
   .shot-card { height: 68mm; width: auto; max-width: 100%; object-fit: contain; object-position: center top; background: transparent; border: none; margin: 0 auto; }
   figure.cardfig { text-align: center; background: var(--navy-2); border-radius: 8px; padding: 3mm 3mm 0; border: 1px solid var(--line); margin-bottom: 3.2mm; }
@@ -649,7 +651,7 @@
   <div class="hero-wrap">
     <img src="../shots/01-hero-floor-mattress-gaps.png" alt="Hero scene: a floor mattress for three under a net that is too small and hung too high, with glowing red gaps and a room score of 0.">
   </div>
-  <p class="caption"><strong>Hero scene.</strong> A floor mattress for three, with a standard net that is too small and hung too high. Gaps glow red. Room score: 0. Sleepers are shown as pillow and blanket lumps — never as human figures. Procedural stand-in model; a real Lux3D model will replace it.</p>
+  <p class="caption"><strong>Hero scene.</strong> A floor mattress for three, with a standard net that is too small and hung too high. Gaps glow red. Room score: 0. Sleepers are shown as pillow and blanket lumps — never as human figures. The mattress is a real Aholo Lux3D model (“Patterned Mattress”) generated from one phone photo.</p>
   <div class="cover-meta">
     <div class="who">Toyyib Muhammed
       <small>Solo submission  ·  November 2026</small>
@@ -750,19 +752,19 @@
   </div>
 
   <div class="ph-row">
-    <div class="placeholder">
-      <div class="tag">[Lux3D generation screenshots — to add]</div>
-      <p>Source photo in the Lux3D editor, the generation result (including credit cost), and the GLB download. These stills will be inserted once the models have been generated.</p>
-    </div>
-    <div class="placeholder">
-      <div class="tag">[Real Lux3D model in app — to add]</div>
-      <p>The same GLB, dropped into No Gap Night, with the net draped over the user’s own bed or floor mattress. Until then, the app uses procedural stand-in models.</p>
-    </div>
+    <figure style="margin:0;">
+      <img class="shot-ph" src="fig-lux3d-generating.jpg" alt="The Aholo Lux3D editor generating a model: a point cloud of the bed forming over a glowing ring, with the Prepare, Shape, Texture and Complete steps.">
+      <figcaption><strong>Lux3D generating.</strong> The user’s own bed photo becoming a 3D model in the Lux3D editor (Image to 3D, Standard, 300K faces, PBR materials).</figcaption>
+    </figure>
+    <figure style="margin:0;">
+      <img class="shot-ph" src="../shots/10-lux3d-bed-gaps.png" alt="The Lux3D bed inside No Gap Night under a net that is too small and hung too high, with red gaps and a room score of 0.">
+      <figcaption><strong>The same bed in the app.</strong> “Bed With Bedding” from Lux3D, scaled to a rough 100 × 190 cm. The net is too small and too high: red gaps, room score 0.</figcaption>
+    </figure>
   </div>
 
   <figure>
-    <img class="shot-wide" src="../shots/06a-glb-loading-credit.png" alt="The app showing the credit 'Generated with Aholo Lux3D' while a GLB file loads over a bed.">
-    <figcaption><strong>Generated with Aholo Lux3D.</strong> The credit appears as a loading overlay and again on the model label once the file is in the scene. The file in this still is a test GLB used to check the loader, not yet a Lux3D capture of a real bed.</figcaption>
+    <img class="shot-journey" src="fig-journey.png" alt="The Photo to Lux3D to Net journey card: the phone photo of a floor mattress, the Lux3D model with a 'Generated with Aholo Lux3D' credit, and the netted result with a score going from 0 to 100.">
+    <figcaption><strong>Photo → Lux3D → Net, inside the app.</strong> The journey card shows the source photo, the Lux3D model and the netted result side by side, credited “Generated with Aholo Lux3D”. It is driven by <em>assets/models/manifest.json</em>, so each new model adds a tab. Three real models are included: a floor mattress, a single bed, and a wooden double bed pushed against a wall.</figcaption>
   </figure>
 
   <div class="note">
@@ -878,9 +880,52 @@
   </div>
 </section>
 
-<!-- ===================== PAGE 6: TECH ===================== -->
-<section class="page inner tight">
+<!-- ===================== PAGE 6: demo features ===================== -->
+<section class="page inner">
   <div class="sec-label"><span class="num">05</span></div>
+  <h2>See the difference, share the fix</h2>
+  <p class="lead" style="margin-top:3.5mm;">Three features make the result easy to understand in a few seconds, and easy to pass on to the person who will hang the net.</p>
+
+  <figure>
+    <img class="shot-wide" style="object-position:50% 92%;height:70mm;" src="../shots/12-before-after.png" alt="Split-screen before and after on the Lux3D floor mattress: the left half shows the small net with red gaps and a score of 0, the right half shows the fitted net with a score of 100, with a white drag handle in the middle.">
+    <figcaption><strong>Before / after wipe.</strong> One tap runs Fix my room and opens a split screen: the room as it was on the left (red gaps, score 0), the fixed room on the right (score 100). Both halves are live 3D with their own mosquitoes; drag the handle, or use the arrow keys. It still reads clearly at 480p.</figcaption>
+  </figure>
+
+  <div class="shot-pair">
+    <figure>
+      <img src="../shots/14-share.png" style="object-position:50% 30%;" alt="A shared link opened in a fresh browser: the same room and model come back and the size card opens on its own.">
+      <figcaption><strong>Share link.</strong> “Copy link” stores the whole room in the address (room size, every sleeping place, net, hook height and which Lux3D model it uses). Opening it restores the scene and, from the size card, opens the card too. Nothing is uploaded; the link is the data.</figcaption>
+    </figure>
+    <figure>
+      <img src="../shots/12-before-after-480p.png" style="object-position:20% 50%;" alt="The before and after wipe at 854 by 480 pixels.">
+      <figcaption><strong>Made for small screens and video.</strong> The wipe, the score badges and the controls stay readable at 480p, and the controls fold into a bottom sheet on phones.</figcaption>
+    </figure>
+  </div>
+
+  <div class="split" style="margin-top:1mm;">
+    <div>
+      <h3 style="margin-top:0;">A guided first view</h3>
+      <ul class="plain">
+        <li>A short title intro: the camera glides down into the moonlit room.</li>
+        <li>A three-step hint: pick a sleeping place, look for red, tap Fix my room. Each step ticks off as you do it, then the hint gets out of the way.</li>
+        <li>Choosing a sleeping place moves the camera smoothly to it.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top:0;">Honest by design</h3>
+      <p>Scores are always called a first estimate, sizes typed for a Lux3D model are labelled a rough estimate, and the app never claims to be a certified device. Adding <em>?clean</em> to the address hides the intro and hints for a clean screen recording.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>No Gap Night  ·  Project report  ·  Manycore Aholo Global 3D AI Hackathon</span>
+    <span class="pg">6</span>
+  </div>
+</section>
+
+<!-- ===================== PAGE 7: TECH ===================== -->
+<section class="page inner tight">
+  <div class="sec-label"><span class="num">06</span></div>
   <h2>How it is built</h2>
   <p class="lead" style="margin-top:2.6mm;">No Gap Night is a static three.js web app. There is no build step, no bundler and no back-end. Any static file server can host it — including GitHub Pages (Jekyll is turned off). Opening <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5pt;">index.html</span> from disk (<span style="font-family:'IBM Plex Mono',monospace;font-size:8.5pt;">file://</span>) will not load ES modules in most browsers; a local server is enough:</p>
 
@@ -904,7 +949,7 @@
     </div>
   </div>
 
-  <div class="sec-label"><span class="num">06</span></div>
+  <div class="sec-label"><span class="num">07</span></div>
   <h2>How the gap check works</h2>
   <p>All measurements are in centimetres. This is a first estimate. The diagrams and the score use the sizes you type, together with a simple geometric model of the net.</p>
 
@@ -931,13 +976,13 @@
 
   <div class="footer">
     <span>No Gap Night  ·  Project report  ·  Manycore Aholo Global 3D AI Hackathon</span>
-    <span class="pg">6</span>
+    <span class="pg">7</span>
   </div>
 </section>
 
-<!-- ===================== PAGE 7: LIMITS, FUTURE, LINKS ===================== -->
+<!-- ===================== PAGE 8: LIMITS, FUTURE, LINKS ===================== -->
 <section class="page inner">
-  <div class="sec-label"><span class="num">07</span></div>
+  <div class="sec-label"><span class="num">08</span></div>
   <h2>Honest limits</h2>
   <p class="lead" style="margin-top:3.2mm;">No Gap Night is a practical aid and a wellness tool. It is a first estimate, not a certified health device, and it is not medical advice. Sleep under a treated net every night, and mend holes.</p>
 
@@ -960,12 +1005,12 @@
   </div>
   </div>
 
-  <div class="sec-label" style="margin-top:2.5mm;"><span class="num">08</span></div>
+  <div class="sec-label" style="margin-top:2.5mm;"><span class="num">09</span></div>
   <h2>Where this could go next</h2>
   <div class="future">
     <ul class="plain">
-      <li>Drop real Lux3D models of the family’s own bed, floor mattress and crib into the scenes used in this report.</li>
-      <li>Save and share a room as a link or a small file, so a carpenter or a relative can open the same layout.</li>
+      <li>Add a Lux3D crib model, so all three everyday sleeping places are the family’s own.</li>
+      <li>A QR code on the printed size card that opens the same shared room on a phone.</li>
       <li>Bundle three.js so the app can run after the first visit even without a network, and stay usable in low-connectivity homes.</li>
     </ul>
     <ul class="plain">
@@ -989,7 +1034,7 @@
     </dl>
   </div>
 
-  <p class="credits"><strong>Credits.</strong> 3D models generated with Aholo Lux3D (Manycore). Rendering with three.js (MIT). Screenshots in this report were captured from the running app; until a real Lux3D GLB is loaded they show procedural stand-in models or a test file used to exercise the loader.</p>
+  <p class="credits"><strong>Credits.</strong> 3D models generated with Aholo Lux3D (Manycore). Rendering with three.js (MIT). Screenshots in this report were captured from the running app. The floor mattress, the single bed and the wooden bed are real Lux3D models generated from the author’s own photos; the one-room night and crib scenes use procedural stand-in models.</p>
   <p class="credits" style="margin-top:1.5mm;"><strong>Author.</strong> Toyyib Muhammed, solo.</p>
 
   <div class="disclaimer">
@@ -998,7 +1043,7 @@
 
   <div class="footer">
     <span>No Gap Night  ·  Project report  ·  Manycore Aholo Global 3D AI Hackathon</span>
-    <span class="pg">7</span>
+    <span class="pg">8</span>
   </div>
 </section>
 

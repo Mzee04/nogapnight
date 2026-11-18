@@ -11,7 +11,7 @@ Built for the **Aholo Global 3D AI Hackathon** (Making the World Better / Spatia
 > long-lasting insecticidal net (LLIN) presets; check the label on your own net. The drape is a geometric estimate, not cloth physics.
 
 ## Why
-In a lot of homes, and many Lagos rooms, one room holds a bed, a floor mattress for the children and a crib. Nets get
+In millions of homes around the world, one room holds a bed, a floor mattress for the children and a crib. Nets get
 hung from whatever nail is there: too high, so the hem never reaches the tuck line; too narrow for a 6 × 6 ft mattress;
 or only one sleeper gets a net at all. A net with a gap barely helps. No Gap Night shows the gap on *your* bed
 and tells you exactly where to put the hooks.
@@ -30,6 +30,19 @@ and tells you exactly where to put the hooks.
 - **Fix my room** – picks a net that fits, sets the best hook height and nudges nets off the walls, then drops the new nets.
 - **Size card for your carpenter** – plan view, net W × L × H, frame inside size, hang height, cord length from the ceiling,
   cut list, and 4–6 tie points (A–F) measured from the left wall and the head wall. Print, download PNG or download text.
+- **Before / after wipe** – "◧ Before / after" runs Fix my room (if needed) and opens a split screen: the room as it was
+  on the left (red gaps, score) and the fixed room on the right, both live 3D with their own mosquitoes. Drag the white
+  handle (mouse or touch) or use ← / →; Esc closes it. Readable at 480p.
+- **Photo → Lux3D → Net journey card** – "📷 Photo → 3D → net" shows the source photo, the Lux3D model (credited
+  "Generated with Aholo Lux3D") and the netted result side by side, with the before → after score computed live.
+  It is driven by `assets/models/manifest.json`: any model with a `journey` block gets its own tab.
+- **Share link** – "🔗 Copy link" puts the whole room in the URL hash (`#s=…`: room size, every sleeping place, net,
+  hook mode and height, and which `assets/models/` Lux3D file each place uses). Opening the link restores the scene;
+  the "Copy link" in the size card adds a flag so the size card opens too. Nothing is uploaded. GLBs you loaded from your
+  own disk can't travel in a link, so those places fall back to the stand-in model.
+- **Guided first view** – a short title intro (the camera glides down into the room), a 3-step hint that ticks off as you
+  go (pick a sleeping place → look for red → Fix my room), and a smooth camera move to whichever sleeping place you
+  select. Add `?clean` to the URL to skip the intro and hints for screen recording.
 - **Delight** – animated net drop, soft moonlit night scene with a warm lamp, bloom glow on the gaps, cartoon mosquitoes
   that bonk off nets and sneak through gaps (with a counter), floating "z"s over sleepers (pillows and wrapper lumps,
   no human figures), slow camera orbit that stays above the room. Works on phones (bottom-sheet controls).
@@ -45,7 +58,22 @@ scene in the demo is the user's own room rather than a generic box. Workflow:
 
 Until a GLB is loaded, procedural stand-in models (bed, floor mattress, crib) are used.
 
-A real Lux3D model is included: **My bed (Lux3D)** in the Scene row loads `assets/models/bed-lux3d.glb`
+Three real Lux3D models, generated from the author's own photos, are included:
+
+**My floor mattress (Lux3D)** is the hero scene that opens first. It loads `assets/models/mattress-lux3d.glb`
+("Patterned Mattress"), levelled flat on the floor and turned so its long side runs from the head wall, scaled to a
+rough estimate of 120 × 190 cm, about 15 cm thick, with two sleepers shown as pillow and wrapper lumps. It starts
+under a single 100 × 180 net hung too high, so it scores 0; Fix my room brings it to 100. The web copy is ~2.6 MB
+(1024 px JPEG base colour, 512 px metal/roughness, simplified and quantized mesh); the untouched export is kept as
+`mattress-lux3d-original.glb` (16.3 MB) and is not loaded at runtime.
+
+**Bed by the wall (Lux3D)** loads `assets/models/wood-bed-lux3d.glb`, a wooden double bed with corner posts
+(rough estimate 140 × 190 cm, mattress top about 50 cm), pushed tight against the left wall. Its 160 × 180 net runs into
+the wall, is too short for the mattress and hangs too high, so you get the wall warning and red gaps; Fix my room picks
+a family net, sets the hook height and slides the bed off the wall. Web copy ~2.8 MB; original kept as
+`wood-bed-lux3d-original.glb` (18.1 MB).
+
+**My bed (Lux3D)** in the Scene row loads `assets/models/bed-lux3d.glb`
 ("Bed With Bedding" — a single bed with a headboard, frame and messy sheet), scaled to a rough estimate of
 100 × 190 cm, mattress top about 45 cm. The app uses a web-optimized copy (~4.1 MB). The original Lux3D export
 is kept beside it as `bed-lux3d-original.glb` (26.8 MB) and is not loaded at runtime.
@@ -64,16 +92,26 @@ time. It runs as-is on GitHub Pages (`.nojekyll` included). Opening `index.html`
 ES modules in most browsers; use a server.
 
 ### Adding your own models
-See [`assets/models/README.md`](assets/models/README.md).
+See [`assets/models/README.md`](assets/models/README.md). To give a model a journey card tab, add a `journey` block to
+its manifest entry (`photo`, `lux3d` screenshot, netted `result` image, and optionally a `scene` preset name), and put
+the images in `assets/photos/` and `assets/journey/`. `tests/shots-features.py` regenerates the `*-netted.jpg` result
+tiles from the before/after wipe.
 
 ### Screenshots / smoke test
 `tests/shots.py` (Playwright + Chrome) loads the app, clicks through the scenes, Fix my room, the size card, PNG/text export,
 a GLB load and a phone viewport, saves images to `shots/`, and prints any console errors. `tests/shots-lux3d.py` loads the
 My bed (Lux3D) preset and saves `shots/10-lux3d-bed-gaps.png`, `shots/11-lux3d-bed-fixed.png` and 480p copies.
+`tests/shots-features.py` covers the intro, onboarding, camera focus, the Lux3D floor mattress
+(`15-lux3d-mattress-gaps.png`, `16-lux3d-mattress-fixed.png`), the before/after wipe (`12-before-after.png`, dragged,
+bed, 480p and phone), the journey card (`13-journey-card.png`, bed tab, 480p) and share links (`14a-share-copied.png`,
+`14-share.png` = the link opened in a fresh page with the size card restored, 480p).
 
 ```bash
-python3 -m http.server 8765 &
-python3 tests/shots.py
+python3 -m http.server 8765 --directory /path/to/nogapnight &
+cd /tmp
+python3 /path/to/nogapnight/tests/shots.py "http://127.0.0.1:8765/?clean"
+python3 /path/to/nogapnight/tests/shots-lux3d.py "http://127.0.0.1:8765/?clean"
+python3 /path/to/nogapnight/tests/shots-features.py
 ```
 
 ## How the check works (all cm)
@@ -88,6 +126,7 @@ python3 tests/shots.py
   walls and overlaps.
 
 ## Limits
+- The before/after "before" side is the room exactly as it was when you pressed Fix my room; it is a snapshot, not an undo.
 - A first estimate. The drape is parametric (straight walls with sag and folds), not a cloth simulation.
 - The gap check uses the sizes you type, not the mesh; the GLB is for seeing your real bed. Lux3D models are not to scale,
   so the footprint is scaled to your typed size and the height is scaled proportionally.
@@ -108,7 +147,7 @@ python3 tests/shots.py
   https://bbnburundi.org/wp-content/uploads/2021/08/DEAS-455_2021-LLIN-Mosquito-nets-standard-1.pdf
 - SafeNet LLIN standard sizes table. https://safenetllin.com/product/
 
-Nigerian mattress presets (6 × 6, 6 × 4½, 6 × 3½ ft) are common market sizes converted to cm.
+Foot-based mattress presets (6 × 6, 6 × 4½, 6 × 3½ ft) are common market sizes converted to cm.
 
 ## Credits
 3D models generated with [Aholo Lux3D](https://www.aholo.ai/) (Manycore). Rendering with [three.js](https://threejs.org/) (MIT).
