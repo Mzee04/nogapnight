@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>No Gap Night · hang your mosquito net with no gaps</title>
+  <meta name="description" content="Photograph your bed, turn it into 3D with Aholo Lux3D, drape a standard mosquito net over it and see every gap glow red. Get a carpenter card for the frame." />
+  <meta name="theme-color" content="#070b1a" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div id="viewport"><canvas id="c" aria-label="3D view of the room and nets"></canvas>
+      <div id="labels"></div>
+      <div id="drop-hint" hidden>Drop your Lux3D .glb here</div>
+      <div id="hud">
+        <div class="hud-score" id="room-score"><span class="num">--</span><span class="lbl">room score</span></div>
+        <div class="hud-stats"><span>🦟 sneak-ins <b id="st-sneak">0</b></span><span>💥 bonks off the net <b id="st-bonk">0</b></span></div>
+      </div>
+      <div id="view-btns">
+        <button id="btn-orbit" class="chip on" title="Slow camera orbit">⟳ Orbit</button>
+        <button id="btn-drop" class="chip" title="Replay the net drop">⬇ Drop nets</button>
+      </div>
+      <div id="loading">Lighting the room…</div>
+      <div id="glb-loading" hidden><div class="spin"></div><b>Generated with Aholo Lux3D</b><span id="glb-loading-name">loading your model…</span></div>
+    </div>
+
+    <aside id="panel">
+      <button id="panel-toggle" aria-label="Show or hide controls"><span></span></button>
+      <header>
+        <h1>🌙 No Gap Night</h1>
+        <p class="tag">Hang your mosquito net with <b>no gaps</b>. Photo → Aholo Lux3D → 3D net check → carpenter card.</p>
+      </header>
+
+      <section>
+        <h2>Scene</h2>
+        <div class="row wrap" id="presets">
+          <button data-preset="floor" class="chip">Floor mattress, 3 sleepers</button>
+          <button data-preset="room" class="chip">One-room night</button>
+          <button data-preset="bed" class="chip">Bed</button>
+          <button data-preset="crib" class="chip">Crib</button>
+        </div>
+        <details>
+          <summary>Room size</summary>
+          <div class="grid3">
+            <label>Width cm<input type="number" id="room-w" min="150" max="1000" step="5"></label>
+            <label>Depth cm<input type="number" id="room-d" min="150" max="1000" step="5"></label>
+            <label>Ceiling cm<input type="number" id="room-c" min="180" max="500" step="5"></label>
+          </div>
+        </details>
+      </section>
+
+      <section>
+        <h2>Sleeping places</h2>
+        <div class="row wrap" id="place-tabs"></div>
+        <div class="row wrap small">
+          <button class="chip ghost" data-add="bed">+ bed</button>
+          <button class="chip ghost" data-add="floor">+ floor mattress</button>
+          <button class="chip ghost" data-add="crib">+ crib</button>
+          <button class="chip ghost danger" id="btn-remove">remove</button>
+        </div>
+      </section>
+
+      <section id="place-form">
+        <div class="grid2">
+          <label>Name<input id="f-name" maxlength="24"></label>
+          <label>Type<select id="f-kind"><option value="bed">Bed on frame</option><option value="floor">Mattress on floor</option><option value="crib">Crib / cot</option></select></label>
+        </div>
+        <label>Mattress size
+          <select id="f-size">
+            <option value="">Custom (type below)</option>
+            <option value="183x183">6 × 6 ft (183 × 183)</option>
+            <option value="183x137">6 × 4½ ft (183 × 137)</option>
+            <option value="183x107">6 × 3½ ft (183 × 107)</option>
+            <option value="190x135">Double 190 × 135</option>
+            <option value="200x160">Queen 200 × 160</option>
+            <option value="120x60">Crib 120 × 60</option>
+          </select>
+        </label>
+        <div class="grid3">
+          <label>Length cm<input type="number" id="f-len" min="50" max="260" step="1"></label>
+          <label>Width cm<input type="number" id="f-wid" min="40" max="260" step="1"></label>
+          <label>Top height cm<input type="number" id="f-top" min="5" max="120" step="1" title="Floor to the top of the mattress"></label>
+        </div>
+        <div class="grid3">
+          <label>Sleepers<input type="number" id="f-sleep" min="0" max="4" step="1"></label>
+          <label>From left wall<input type="number" id="f-x" step="5" title="Centre of the mattress, cm"></label>
+          <label>From head wall<input type="number" id="f-z" step="5" title="Centre of the mattress, cm"></label>
+        </div>
+        <div class="row"><label class="check"><input type="checkbox" id="f-rot"> Turn 90°</label></div>
+
+        <h3>Net</h3>
+        <label>Standard net<select id="f-net"></select></label>
+        <div class="grid2">
+          <label>Hem should reach<select id="f-tuck"><option value="mattress">Under the mattress</option><option value="floor">The floor</option></select></label>
+          <label>Hook height<select id="f-hookmode"><option value="auto">Best height (auto)</option><option value="manual">I'll set it</option></select></label>
+        </div>
+        <label id="hook-row">Hook height: <b id="hook-val"></b> cm<input type="range" id="f-hook" min="80" max="300" step="1"></label>
+
+        <h3>3D model</h3>
+        <div class="glb">
+          <label class="file chip">📷 Load your Lux3D .glb<input type="file" id="f-glb" accept=".glb,model/gltf-binary"></label>
+          <select id="f-manifest" hidden><option value="">…or pick from assets/models</option></select>
+          <button class="chip ghost" id="btn-clear-glb" hidden>use stand-in</button>
+        </div>
+        <p class="hint" id="glb-info">Using a stand-in model. Generate your real bed in <a href="https://3d.aholo.ai/lux3d/home" target="_blank" rel="noopener">Aholo Lux3D</a>, download the GLB and drop it on the 3D view. It is scaled to the size you typed.</p>
+      </section>
+
+      <section id="result">
+        <div class="place-score"><div class="ring" id="ring"><span id="ps-num">--</span></div>
+          <div><b id="ps-title">Gap check</b><p id="ps-net" class="hint"></p></div></div>
+        <ul id="tips"></ul>
+        <div class="row wrap">
+          <button class="chip primary" id="btn-fix">✨ Fix my room</button>
+          <button class="chip" id="btn-card">🪚 Size card for your carpenter</button>
+        </div>
+      </section>
+
+      <footer>
+        <p><b>Honest note:</b> a first estimate and a practical aid, not a certified health device. Net sizes are standard LLIN presets (check your net's label), and the drape is a geometric estimate, not cloth physics. Sleep under a treated net every night and fix holes.</p>
+        <p>3D models made with <a href="https://www.aholo.ai/" target="_blank" rel="noopener">Aholo Lux3D</a></p>
+      </footer>
+    </aside>
+  </div>
+
+  <dialog id="card-dialog">
+    <div class="dialog-bar"><b>Size card</b><span><button class="chip primary" id="btn-png">⬇ PNG</button> <button class="chip" id="btn-txt">⬇ Text</button> <button class="chip" id="btn-print">🖨 Print</button> <button class="chip" id="btn-close-card">Close</button></span></div>
+    <div id="print-card"></div>
+  </dialog>
+
+  <noscript>No Gap Night needs JavaScript and WebGL.</noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

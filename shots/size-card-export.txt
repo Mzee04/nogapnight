@@ -1,0 +1,46 @@
+HAND THIS TO YOUR CARPENTER
+No Gap Night size card (a first estimate). All sizes in cm.
+Room 420 x 380, ceiling 280. Measure from the LEFT WALL and the HEAD WALL; heights from the floor.
+
+1. Big bed: mattress 183 x 183, top at 50
+   Net: 180 x 190 x 150 cm (W x L x H)
+   Hang height: 180   Cord from ceiling: 100
+   Frame inside size (W x L): 180 x 190
+   Cut list: 2 rails × 190 cm; 2 rails × 180 cm; 4 posts × 185 cm (only for a free-standing frame)
+   Tie points (from left wall / from head wall / height):
+     1A: 30 / 15 / 180  (corner loop)
+     1B: 210 / 15 / 180  (corner loop)
+     1C: 210 / 205 / 180  (corner loop)
+     1D: 30 / 205 / 180  (corner loop)
+     1E: 30 / 110 / 180  (optional, stops side sag)
+     1F: 210 / 110 / 180  (optional, stops side sag)
+   Gap score: 90/100
+   - Nearly sealed. Check the notes below. Tuck the hem under the mattress all the way round before lights out.
+   - Tight fit: the net is a few cm smaller than the mattress (190×180 vs 183×183). The walls will press on arms, and mosquitoes can bite through netting that touches skin.
+
+2. Kids mattress: mattress 183 x 107, top at 18
+   Net: 180 x 190 x 150 cm (W x L x H)
+   Hang height: 148   Cord from ceiling: 132
+   Frame inside size (W x L): 180 x 190
+   Cut list: 2 rails × 190 cm; 2 rails × 180 cm; 4 posts × 153 cm (only for a free-standing frame)
+   Tie points (from left wall / from head wall / height):
+     2A: 237 / 20 / 148  (corner loop)
+     2B: 417 / 20 / 148  (corner loop)
+     2C: 417 / 210 / 148  (corner loop)
+     2D: 237 / 210 / 148  (corner loop)
+     2E: 237 / 115 / 148  (optional, stops side sag)
+     2F: 417 / 115 / 148  (optional, stops side sag)
+   Gap score: 100/100
+   - Nearly sealed. Check the notes below. Tuck the hem under the mattress all the way round before lights out.
+   - 2 people on a 107 cm wide mattress is crowded. Someone will end up pressed against the net.
+
+3. Baby crib: mattress 120 x 60, top at 45
+   Net: conical, 850 cm hem x 56 cm ring x 180 cm H
+   Hang height: 202   Cord from ceiling: 78
+   Cut list: 1 ceiling hook + 78 cm of cord to the ring
+   Tie points (from left wall / from head wall / height):
+     3A: 300 / 300 / 202  (single hook, centre of the mattress)
+   Gap score: 100/100
+   - Looks sealed. Tuck the hem under the mattress all the way round before lights out.
+
+Practical aid only, not a certified health device. Net sizes are standard LLIN presets; check your own net label.
