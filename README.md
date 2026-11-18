@@ -58,7 +58,7 @@ scene in the demo is the user's own room rather than a generic box. Workflow:
 
 Until a GLB is loaded, procedural stand-in models (bed, floor mattress, crib) are used.
 
-Three real Lux3D models, generated from the author's own photos, are included:
+Four real Lux3D models, generated from the author's own photos, are included:
 
 **My floor mattress (Lux3D)** is the hero scene that opens first. It loads `assets/models/mattress-lux3d.glb`
 ("Patterned Mattress"), levelled flat on the floor and turned so its long side runs from the head wall, scaled to a
@@ -72,6 +72,16 @@ under a single 100 × 180 net hung too high, so it scores 0; Fix my room brings 
 the wall, is too short for the mattress and hangs too high, so you get the wall warning and red gaps; Fix my room picks
 a family net, sets the hook height and slides the bed off the wall. Web copy ~2.8 MB; original kept as
 `wood-bed-lux3d-original.glb` (18.1 MB).
+
+**Wooden bed, second view (Lux3D)** is a second Lux3D take of the same wooden double bed, from a closer
+photo over the footboard. It loads `assets/models/wood-bed-2-lux3d.glb` (same rough size, 140 × 190 cm,
+mattress top about 50 cm). Web copy ~2.6 MB; original kept as `wood-bed-2-lux3d-original.glb` (16.7 MB).
+It has its own tab on the Photo → Lux3D → Net journey card; "Open this in 3D" loads the `luxwood2` preset
+(same room and placement as "Bed by the wall", so the two takes can be compared from one camera).
+
+**Shared room (Lux3D)** puts two of those real models in one room: the wooden bed against the left wall
+and the floor mattress beside it, both starting under a net that is too small and hung too high. Fix my room
+picks a fitting net for each place, sets the hook heights and slides the bed off the wall.
 
 **My bed (Lux3D)** in the Scene row loads `assets/models/bed-lux3d.glb`
 ("Bed With Bedding" — a single bed with a headboard, frame and messy sheet), scaled to a rough estimate of
@@ -105,6 +115,7 @@ My bed (Lux3D) preset and saves `shots/10-lux3d-bed-gaps.png`, `shots/11-lux3d-b
 (`15-lux3d-mattress-gaps.png`, `16-lux3d-mattress-fixed.png`), the before/after wipe (`12-before-after.png`, dragged,
 bed, 480p and phone), the journey card (`13-journey-card.png`, bed tab, 480p) and share links (`14a-share-copied.png`,
 `14-share.png` = the link opened in a fresh page with the size card restored, 480p).
+It also captures the Shared room (Lux3D) scene (`20-shared-room-gaps.png`, `21-shared-room-fixed.png`) and the second wooden-bed take (`22-lux3d-woodbed2.png`).
 
 ```bash
 python3 -m http.server 8765 --directory /path/to/nogapnight &
@@ -151,3 +162,9 @@ Foot-based mattress presets (6 × 6, 6 × 4½, 6 × 3½ ft) are common market si
 
 ## Credits
 3D models generated with [Aholo Lux3D](https://www.aholo.ai/) (Manycore). Rendering with [three.js](https://threejs.org/) (MIT).
+
+## Links
+- Live demo: [Demo link — live app]
+- Source: [Repo link]
+- Demo video: [YouTube / video URL]
+- Aholo Lux3D: https://3d.aholo.ai/lux3d/home

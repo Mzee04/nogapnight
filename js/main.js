@@ -62,6 +62,35 @@ const PRESETS = {
     })],
     model: { file: 'wood-bed-lux3d.glb', name: 'Wooden Bed (Lux3D)' },
   }),
+  // Second Lux3D take of the same wooden double bed, from a closer photo over the footboard.
+  // Same room and placement as luxwood so the two takes can be compared from one camera.
+  luxwood2: () => ({
+    room: { width: 360, depth: 360, ceiling: 270 },
+    places: [place({
+      name: 'Wooden bed, second view', kind: 'bed', length: 190, width: 140, top: 50, sleepers: 2,
+      x: 72, z: 140, net: 'r160', hookMode: 'manual', hook: 215, tuck: 'mattress',
+    })],
+    model: { file: 'wood-bed-2-lux3d.glb', name: 'Wooden Bed, second view (Lux3D)' },
+  }),
+  // Two real Lux3D sleeping places in one room: the wooden bed against the wall, and the floor mattress.
+  // Both start with a net that is too small and hung too high; Fix my room seals the room.
+  shared: () => ({
+    room: { width: 420, depth: 380, ceiling: 270 },
+    places: [
+      place({
+        name: 'Bed by the wall', kind: 'bed', length: 190, width: 140, top: 50, sleepers: 2,
+        x: 72, z: 160, net: 'r160', hookMode: 'manual', hook: 215, tuck: 'mattress',
+      }),
+      place({
+        name: 'Floor mattress', kind: 'floor', length: 190, width: 120, top: 15, sleepers: 2,
+        x: 280, z: 160, net: 'r100', hookMode: 'manual', hook: 190, tuck: 'mattress',
+      }),
+    ],
+    models: [
+      { file: 'wood-bed-lux3d.glb', name: 'Wooden Bed (Lux3D)' },
+      { file: 'mattress-lux3d.glb', name: 'Patterned Mattress (Lux3D)' },
+    ],
+  }),
   crib: () => ({ room: { width: 300, depth: 280, ceiling: 270 },
     places: [place({ name: 'Crib', kind: 'crib', length: 120, width: 60, top: 45, sleepers: 1, x: 150, z: 130, net: 'c850', hookMode: 'manual', hook: 140 })] }),
 };
@@ -390,7 +419,14 @@ function loadPreset(name) {
   state.room = s.room; state.places = s.places; state.selected = s.places[0].id;
   glbs.clear(); buildRoom(); recompute({ drop: true }); frameCamera(); swarm.resetStats();
   document.querySelectorAll('#presets [data-preset]').forEach((b) => b.classList.toggle('sel', b.dataset.preset === name));
-  if (s.model) loadGLB(`assets/models/${s.model.file}`, s.model.name, state.places[0]);
+  const list = s.models || (s.model ? [s.model] : []);
+  (async () => {
+    for (let i = 0; i < list.length; i++) {
+      const m = list[i];
+      const p = state.places[m.place ?? i];
+      if (p) await loadGLB(`assets/models/${m.file}`, m.name, p);
+    }
+  })();
 }
 
 const num = (id, lo, hi) => Math.min(hi, Math.max(lo, +$(id).value || 0));
@@ -880,4 +916,4 @@ if (isMobile) { $('panel').classList.add('collapsed'); document.body.classList.a
 if (shared && shared.c) setTimeout(openCard, CLEAN ? 600 : 3100);
 
 // handy for tests / debugging
-window.__ngn = { state, get analysis() { return analysis; }, recompute, loadPreset, placeObjs, scene, setCompare, cmp, encodeShare, get before() { return before; } };
+window.__ngn = { state, get analysis() { return analysis; }, recompute, loadPreset, placeObjs, scene, camera, controls, glbs, setCompare, cmp, encodeShare, get before() { return before; } };

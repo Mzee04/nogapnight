@@ -2,14 +2,14 @@
   "models": [
     {
       "file": "mattress-lux3d.glb",
-      "name": "My floor mattress (Lux3D) · 120 × 190 cm (rough estimate)",
+      "name": "My floor mattress (Lux3D) \u00b7 120 \u00d7 190 cm (rough estimate)",
       "kind": "floor",
       "length": 190,
       "width": 120,
       "top": 15,
       "credit": "Generated with Aholo Lux3D",
       "sourceName": "Patterned Mattress",
-      "note": "Rough estimate of a floor mattress (about 120 × 190 cm, about 15 cm thick). Levelled flat on the floor and turned so its long side runs head wall to foot. Web-optimized from the original Lux3D GLB (mattress-lux3d-original.glb, 16.3 MB).",
+      "note": "Rough estimate of a floor mattress (about 120 \u00d7 190 cm, about 15 cm thick). Levelled flat on the floor and turned so its long side runs head wall to foot. Web-optimized from the original Lux3D GLB (mattress-lux3d-original.glb, 16.3 MB).",
       "journey": {
         "title": "Floor mattress",
         "scene": "luxmat",
@@ -20,14 +20,14 @@
     },
     {
       "file": "bed-lux3d.glb",
-      "name": "My bed (Lux3D) · 100 × 190 cm (rough estimate)",
+      "name": "My bed (Lux3D) \u00b7 100 \u00d7 190 cm (rough estimate)",
       "kind": "bed",
       "length": 190,
       "width": 100,
       "top": 45,
       "credit": "Generated with Aholo Lux3D",
       "sourceName": "Bed With Bedding",
-      "note": "Rough estimate of a single bed (about 100 × 190 cm, mattress top about 45 cm). Web-optimized from the original Lux3D GLB (bed-lux3d-original.glb, 26.8 MB).",
+      "note": "Rough estimate of a single bed (about 100 \u00d7 190 cm, mattress top about 45 cm). Web-optimized from the original Lux3D GLB (bed-lux3d-original.glb, 26.8 MB).",
       "journey": {
         "title": "Bed",
         "scene": "luxbed",
@@ -38,14 +38,14 @@
     },
     {
       "file": "wood-bed-lux3d.glb",
-      "name": "Bed by the wall (Lux3D) · 140 × 190 cm (rough estimate)",
+      "name": "Bed by the wall (Lux3D) \u00b7 140 \u00d7 190 cm (rough estimate)",
       "kind": "bed",
       "length": 190,
       "width": 140,
       "top": 50,
       "credit": "Generated with Aholo Lux3D",
       "sourceName": "Wooden Bed",
-      "note": "Rough estimate of a wooden double bed with corner posts (about 140 × 190 cm, mattress top about 50 cm). Levelled on the floor with a PCA fit; long side runs from the head wall. Web-optimized from the original Lux3D GLB (wood-bed-lux3d-original.glb, 18.1 MB).",
+      "note": "Rough estimate of a wooden double bed with corner posts (about 140 \u00d7 190 cm, mattress top about 50 cm). Levelled on the floor with a PCA fit; long side runs from the head wall. Web-optimized from the original Lux3D GLB (wood-bed-lux3d-original.glb, 18.1 MB).",
       "journey": {
         "title": "Bed by the wall",
         "scene": "luxwood",
@@ -53,6 +53,25 @@
         "lux3d": "assets/journey/wood-bed-lux3d.jpg",
         "lux3dNote": "The Lux3D GLB, shown in No Gap Night before the net check",
         "result": "assets/journey/wood-bed-netted.jpg"
+      }
+    },
+    {
+      "file": "wood-bed-2-lux3d.glb",
+      "name": "Wooden bed, second view (Lux3D) \u00b7 140 \u00d7 190 cm (rough estimate)",
+      "kind": "bed",
+      "length": 190,
+      "width": 140,
+      "top": 50,
+      "credit": "Generated with Aholo Lux3D",
+      "sourceName": "Wooden Bed, second view",
+      "note": "Second Lux3D take of the same wooden double bed, from a closer photo over the footboard (about 140 \u00d7 190 cm, mattress top about 50 cm). Levelled on the floor with a PCA fit; long side runs from the head wall. Web-optimized from the original Lux3D GLB (wood-bed-2-lux3d-original.glb, 16.7 MB).",
+      "journey": {
+        "title": "Wooden bed, 2nd view",
+        "scene": "luxwood2",
+        "photo": "assets/photos/wood-bed-2.jpg",
+        "lux3d": "assets/journey/wood-bed-2-lux3d.jpg",
+        "lux3dNote": "The second Lux3D take, shown in No Gap Night before the net check",
+        "result": "assets/journey/wood-bed-2-netted.jpg"
       }
     }
   ]

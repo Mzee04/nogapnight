@@ -625,6 +625,71 @@
 
   /* slight tighter lead on later pages */
   .tight p { margin-bottom: 2.4mm; }
+
+  /* Asset iterations */
+  .iter-quad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 2.2mm;
+    margin: 2mm 0 2.5mm;
+  }
+  .iter-quad figure, .iter-pair figure { margin: 0; }
+  .iter-quad img, .iter-pair img {
+    width: 100%;
+    height: 32mm;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 6px;
+    background: #0b1020;
+    display: block;
+  }
+  .iter-quad figcaption, .iter-pair figcaption {
+    margin-top: 1.2mm;
+    font-size: 7.4pt;
+    line-height: 1.3;
+    color: #3a3f58;
+  }
+  .iter-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+    margin: 2mm 0 2.5mm;
+  }
+  .iter-pair img { height: 42mm; object-fit: contain; background: #0b1020; }
+  table.iter {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 1.5mm 0 2.5mm;
+  }
+  table.iter th, table.iter td {
+    border-bottom: 1px solid var(--line);
+    padding: 1.4mm 2mm;
+    text-align: right;
+    color: #2a2e44;
+  }
+  table.iter th {
+    text-align: right;
+    font-weight: 650;
+    color: var(--navy);
+    font-size: 7.2pt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  table.iter th:first-child, table.iter td:first-child { text-align: left; padding-left: 0; }
+  table.iter td:first-child { font-weight: 600; color: var(--navy); }
+  table.iter .dim { color: #6a7088; font-weight: 400; }
+  .changed {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 2.6mm 3.4mm;
+    font-size: 8.4pt;
+    color: #3a3f58;
+    line-height: 1.4;
+    margin: 0 0 3mm;
+  }
+  .changed strong { color: var(--navy); }
 </style>
 </head>
 <body>
@@ -764,7 +829,7 @@
 
   <figure>
     <img class="shot-journey" src="fig-journey.png" alt="The Photo to Lux3D to Net journey card: the phone photo of a floor mattress, the Lux3D model with a 'Generated with Aholo Lux3D' credit, and the netted result with a score going from 0 to 100.">
-    <figcaption><strong>Photo → Lux3D → Net, inside the app.</strong> The journey card shows the source photo, the Lux3D model and the netted result side by side, credited “Generated with Aholo Lux3D”. It is driven by <em>assets/models/manifest.json</em>, so each new model adds a tab. Three real models are included: a floor mattress, a single bed, and a wooden double bed pushed against a wall.</figcaption>
+    <figcaption><strong>Photo → Lux3D → Net, inside the app.</strong> The journey card shows the source photo, the Lux3D model and the netted result side by side, credited “Generated with Aholo Lux3D”. It is driven by <em>assets/models/manifest.json</em>, so each new model adds a tab. Four real models are included: a floor mattress, a single bed, and two Lux3D takes of the same wooden double bed. A Shared room scene places the wooden bed and the floor mattress together.</figcaption>
   </figure>
 
   <div class="note">
@@ -980,9 +1045,94 @@
   </div>
 </section>
 
-<!-- ===================== PAGE 8: LIMITS, FUTURE, LINKS ===================== -->
-<section class="page inner">
+
+<!-- ===================== PAGE 8: ASSET ITERATIONS ===================== -->
+<section class="page inner tight">
   <div class="sec-label"><span class="num">08</span></div>
+  <h2>Asset iterations</h2>
+  <p class="lead" style="margin-top:2.4mm;">Four real Lux3D models went into the app, each from a phone photo of the author’s own room. This page compares the two takes of the wooden bed, the raw export against the web copy used in the live app, and the original tilted mesh against the levelled model the net is draped over.</p>
+
+  <h3>Two Lux3D takes of the same wooden bed</h3>
+  <div class="iter-quad">
+    <figure>
+      <img src="../assets/photos/wood-bed.jpg" alt="Phone photo of a wooden double bed in a brick-walled room, taken from a high three-quarter angle.">
+      <figcaption><strong>Take 1, photo.</strong> Higher three-quarter view of the whole bed.</figcaption>
+    </figure>
+    <figure>
+      <img src="fig-wood-take1.jpg" alt="The first Lux3D take of the wooden bed, rendered in No Gap Night from a fixed camera, with no net.">
+      <figcaption><strong>Take 1, in the app.</strong> Same camera as take 2, no net.</figcaption>
+    </figure>
+    <figure>
+      <img src="../assets/photos/wood-bed-2.jpg" alt="Phone photo of the same wooden double bed, taken from a closer, lower angle over the footboard.">
+      <figcaption><strong>Take 2, photo.</strong> Closer, lower view over the footboard.</figcaption>
+    </figure>
+    <figure>
+      <img src="fig-wood-take2.jpg" alt="The second Lux3D take of the same wooden bed, rendered in No Gap Night from the same camera as take 1, with no net.">
+      <figcaption><strong>Take 2, in the app.</strong> Same angle, same placement.</figcaption>
+    </figure>
+  </div>
+  <div class="changed">
+    <strong>What changed.</strong> Both jobs are the same wooden double bed with corner posts, tight in a brick corner. Take 1 (18.1 MB, 274,850 triangles) reconstructs a cleaner mattress pattern from the wider shot and is the model used in “Bed by the wall” and the Shared room. Take 2 (16.7 MB, 272,304 triangles) is from the closer footboard photo: the silhouette matches, the bounds are within about 1%, but the texture is noisier and a brown patch is baked onto the mattress. The second take is kept as its own journey tab so the two reconstructions can be compared. Neither export was used raw: each was levelled with a PCA fit (only about 1° of tilt) and reduced to a ~2.6 MB web copy.
+  </div>
+
+  <h3>Raw Lux3D export vs the web copy</h3>
+  <table class="iter">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Raw export</th>
+        <th>Triangles</th>
+        <th>Web copy</th>
+        <th>Triangles</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Floor mattress <span class="dim">Patterned Mattress</span></td>
+        <td>16.3 MB</td><td>266,988</td>
+        <td>2.5 MB</td><td>80,094</td>
+      </tr>
+      <tr>
+        <td>Single bed <span class="dim">Bed With Bedding</span></td>
+        <td>26.8 MB</td><td>484,286</td>
+        <td>4.1 MB</td><td>112,912</td>
+      </tr>
+      <tr>
+        <td>Wooden bed, take 1</td>
+        <td>18.1 MB</td><td>274,850</td>
+        <td>2.6 MB</td><td>82,454</td>
+      </tr>
+      <tr>
+        <td>Wooden bed, take 2</td>
+        <td>16.7 MB</td><td>272,304</td>
+        <td>2.6 MB</td><td>81,690</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:8.2pt;color:#3a3f58;margin-top:-1mm;">Web copies keep the original GLB in the repo (not loaded at runtime). Each web file is simplified, quantized, and saved with a 1024&nbsp;px JPEG base colour and a 512&nbsp;px metal/roughness map (1024&nbsp;px on the single bed) so the live app stays light enough for a phone.</p>
+
+  <h3>Original tilted export vs levelled in the app</h3>
+  <div class="iter-pair">
+    <figure>
+      <img src="fig-mat-tilted.jpg" alt="The raw Lux3D floor-mattress export, still tilted about 43 degrees in its own frame.">
+      <figcaption><strong>Raw export.</strong> The floor mattress arrives tilted about 43° in its own frame, not sitting on the ground plane.</figcaption>
+    </figure>
+    <figure>
+      <img src="fig-mat-levelled.jpg" alt="The same floor mattress after a PCA fit, sitting level on the floor in the web copy.">
+      <figcaption><strong>Levelled web copy.</strong> A PCA fit stands it on y = 0 with the long side toward the head wall, then the mesh is simplified for the web.</figcaption>
+    </figure>
+  </div>
+  <p style="font-size:8.2pt;color:#3a3f58;">The same step was applied to every model. The single bed was tilted about 18°. Both wooden-bed takes were already nearly level (about 1°) and only needed to be sat on the floor and aligned. The gap check still uses the typed mattress size, not the mesh.</p>
+
+  <div class="footer">
+    <span>No Gap Night  ·  Project report  ·  Manycore Aholo Global 3D AI Hackathon</span>
+    <span class="pg">8</span>
+  </div>
+</section>
+
+<!-- ===================== PAGE 9: LIMITS, FUTURE, LINKS ===================== -->
+<section class="page inner">
+  <div class="sec-label"><span class="num">09</span></div>
   <h2>Honest limits</h2>
   <p class="lead" style="margin-top:3.2mm;">No Gap Night is a practical aid and a wellness tool. It is a first estimate, not a certified health device, and it is not medical advice. Sleep under a treated net every night, and mend holes.</p>
 
@@ -1005,7 +1155,7 @@
   </div>
   </div>
 
-  <div class="sec-label" style="margin-top:2.5mm;"><span class="num">09</span></div>
+  <div class="sec-label" style="margin-top:2.5mm;"><span class="num">10</span></div>
   <h2>Where this could go next</h2>
   <div class="future">
     <ul class="plain">
@@ -1034,7 +1184,7 @@
     </dl>
   </div>
 
-  <p class="credits"><strong>Credits.</strong> 3D models generated with Aholo Lux3D (Manycore). Rendering with three.js (MIT). Screenshots in this report were captured from the running app. The floor mattress, the single bed and the wooden bed are real Lux3D models generated from the author’s own photos; the one-room night and crib scenes use procedural stand-in models.</p>
+  <p class="credits"><strong>Credits.</strong> 3D models generated with Aholo Lux3D (Manycore). Rendering with three.js (MIT). Screenshots in this report were captured from the running app. The floor mattress, the single bed and both takes of the wooden bed are real Lux3D models generated from the author’s own photos; the one-room night and crib scenes use procedural stand-in models.</p>
   <p class="credits" style="margin-top:1.5mm;"><strong>Author.</strong> Toyyib Muhammed, solo.</p>
 
   <div class="disclaimer">
@@ -1043,7 +1193,7 @@
 
   <div class="footer">
     <span>No Gap Night  ·  Project report  ·  Manycore Aholo Global 3D AI Hackathon</span>
-    <span class="pg">8</span>
+    <span class="pg">9</span>
   </div>
 </section>
 

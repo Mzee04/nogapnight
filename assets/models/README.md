@@ -51,3 +51,12 @@ Default size: 140 × 190 cm, mattress top about 50 cm (a rough estimate). The jo
 - `bed-lux3d-original.glb` — the untouched Lux3D export (26.8 MB, ~484k triangles, 2048 px PNG textures). Not loaded by the app; kept so the source model is on hand.
 
 Lux3D named this model "Bed With Bedding". It is a single bed with a headboard, frame and a messy sheet. Default size in the manifest is 100 × 190 cm, mattress top about 45 cm (a rough estimate).
+
+## Included: Wooden Bed, second view (Lux3D)
+
+- `wood-bed-2-lux3d.glb` — web copy used by **Wooden bed, second view (Lux3D)** and the fourth journey tab (~2.6 MB; levelled with a PCA fit, on y = 0, long side along Z; simplified, quantized, 1024 px JPEG base colour, 512 px metal/roughness).
+- `wood-bed-2-lux3d-original.glb` — the untouched Lux3D export (16.7 MB). Not loaded by the app.
+
+This is a second Lux3D take of the same wooden double bed as `wood-bed-lux3d.glb`, generated from a closer photo over the footboard. Default size: 140 × 190 cm, mattress top about 50 cm (a rough estimate). The two takes are compared on the report's Asset iterations page.
+
+The **Shared room (Lux3D)** scene loads the first wooden bed and the floor mattress together in one room.

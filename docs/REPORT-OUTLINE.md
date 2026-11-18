@@ -5,7 +5,7 @@ Target: 4–6 pages or 6–8 slides. Keep it plain and visual. Wording: say "a f
 ## 1. Title
 - **No Gap Night: hang your mosquito net with no gaps**
 - One line: Photo of your real bed → Aholo Lux3D → 3D net drape → red gaps → a size card for your carpenter.
-- Name, country (Nigeria), hackathon name, track/awards targeted (Making the World Better, Spatial Design).
+- Name, hackathon name, track/awards targeted (Making the World Better, Spatial Design).
 - [SCREENSHOT: hero, floor mattress with three sleepers and red gaps glowing]
 
 ## 2. The problem
@@ -48,7 +48,12 @@ Target: 4–6 pages or 6–8 slides. Keep it plain and visual. Wording: say "a f
 - Gap check uses typed sizes; Lux3D model is scaled to them.
 - Cannot detect holes in the net; assumes the net is hung square and tucked.
 
-## 8. Links
+## 8. Asset iterations
+- Two Lux3D takes of the same wooden bed, side by side, with their source photos and what changed.
+- Raw Lux3D export vs the optimized web copy (size in MB, triangle count) for every model.
+- Original tilted export vs the levelled model in the app (clearest on the floor mattress, tilted about 43°).
+
+## 9. Links
 - Live demo: [GitHub Pages URL]
 - Source: [GitHub repo URL]
 - Demo video: [YouTube / video URL]
