@@ -106,10 +106,14 @@ let analysis = { results: [], roomScore: 0 };
 // ---------- three.js setup ----------
 const canvas = $('c');
 let renderer;
+if (document.documentElement.classList.contains('no-webgl')) {
+  throw new Error('WebGL unavailable');
+}
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 } catch (e) {
-  $('loading').textContent = 'This device could not start WebGL, so the 3D view is unavailable.';
+  if (typeof window.showNoWebGL === 'function') window.showNoWebGL();
+  else $('loading').textContent = 'This device could not start WebGL, so the 3D view is unavailable.';
   throw e;
 }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));

@@ -60,10 +60,12 @@ with sync_playwright() as p:
       return {net:p.net, hookMode:p.hookMode, hook:p.hook};
     }"""))
 
+    page.close()
     s = b.new_page(viewport={"width": 854, "height": 480})
     attach(s, "480p")
     s.goto(URL, wait_until="networkidle")
-    s.wait_for_timeout(2000)
+    s.wait_for_timeout(4000)
+    s.locator("[data-preset=luxbed]").scroll_into_view_if_needed()
     wait_luxbed(s)
     if s.locator("#btn-orbit.on").count():
         s.click("#btn-orbit")

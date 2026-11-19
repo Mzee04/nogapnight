@@ -39,7 +39,7 @@
       </div>
       <div id="view-btns">
         <button id="btn-compare" class="chip" title="Split-screen: before and after Fix my room">◧ <span class="t">Before / after</span></button>
-        <button class="chip btn-journey" title="Photo → Aholo Lux3D → net check">📷 <span class="t">Photo → 3D → net</span></button>
+        <button class="chip primary btn-journey" title="See my real photos → Lux3D models">📷 <span class="t">See my photos → Lux3D</span></button>
         <button id="btn-orbit" class="chip on" title="Slow camera orbit">⟳ <span class="t">Orbit</span></button>
         <button id="btn-drop" class="chip" title="Replay the net drop">⬇ <span class="t">Drop nets</span></button>
       </div>
@@ -61,6 +61,58 @@
         </div>
       </div>
       <div id="glb-loading" hidden><div class="spin"></div><b>Generated with Aholo Lux3D</b><span id="glb-loading-name">loading your model…</span></div>
+
+    <div id="no-webgl" hidden>
+      <div class="nwg-inner">
+        <h1>🌙 No Gap Night</h1>
+        <p class="nwg-lead">The 3D room needs WebGL, which this browser or device does not provide. You can still see how a phone photo becomes an Aholo Lux3D model, and a sample size card, below.</p>
+        <h2>Photo → Aholo Lux3D → Net</h2>
+        <div class="nwg-jr">
+          <article>
+            <h3>Floor mattress</h3>
+            <div class="nwg-row">
+              <figure><img src="assets/photos/mattress.jpg" alt="Photo of a patterned floor mattress"><figcaption>1. Your photo</figcaption></figure>
+              <figure><img src="assets/journey/mattress-lux3d.jpg" alt="Aholo Lux3D model of the floor mattress"><figcaption>2. Aholo Lux3D model</figcaption></figure>
+              <figure><img src="assets/journey/mattress-netted.jpg" alt="Net check of the floor mattress, gaps shown in red"><figcaption>3. Net check</figcaption></figure>
+            </div>
+          </article>
+          <article>
+            <h3>Bed</h3>
+            <div class="nwg-row">
+              <figure><img src="assets/photos/bed.jpg" alt="Photo of a single bed"><figcaption>1. Your photo</figcaption></figure>
+              <figure><img src="assets/journey/bed-lux3d.jpg" alt="Aholo Lux3D model of the bed"><figcaption>2. Aholo Lux3D model</figcaption></figure>
+              <figure><img src="assets/journey/bed-netted.jpg" alt="Net check of the bed"><figcaption>3. Net check</figcaption></figure>
+            </div>
+          </article>
+          <article>
+            <h3>Bed by the wall</h3>
+            <div class="nwg-row">
+              <figure><img src="assets/photos/wood-bed.jpg" alt="Photo of a wooden double bed"><figcaption>1. Your photo</figcaption></figure>
+              <figure><img src="assets/journey/wood-bed-lux3d.jpg" alt="Aholo Lux3D model of the wooden bed"><figcaption>2. Aholo Lux3D model</figcaption></figure>
+              <figure><img src="assets/journey/wood-bed-netted.jpg" alt="Net check of the wooden bed against a wall"><figcaption>3. Net check</figcaption></figure>
+            </div>
+          </article>
+          <article>
+            <h3>Wooden bed, 2nd view</h3>
+            <div class="nwg-row">
+              <figure><img src="assets/photos/wood-bed-2.jpg" alt="Closer photo of the same wooden bed over the footboard"><figcaption>1. Your photo</figcaption></figure>
+              <figure><img src="assets/journey/wood-bed-2-lux3d.jpg" alt="Second Aholo Lux3D take of the wooden bed"><figcaption>2. Aholo Lux3D model</figcaption></figure>
+              <figure><img src="assets/journey/wood-bed-2-netted.jpg" alt="Net check of the second wooden-bed take"><figcaption>3. Net check</figcaption></figure>
+            </div>
+          </article>
+        </div>
+        <h2>Sample size card</h2>
+        <div class="nwg-card">
+          <p><b>Hand this to your carpenter</b> — a first estimate, shown here as a static sample because the 3D view could not start.</p>
+          <p>All sizes in centimetres. Measure hook positions from the <b>left wall</b> and the <b>head wall</b>. Heights are from the floor.</p>
+          <p>Example room: 360 × 360, ceiling 270.<br>
+          1. Floor mattress — 190 × 120 cm mattress, top at 15 cm.<br>
+          Net: Rectangular 190×180×150 (family). Hang height: 190 cm.</p>
+          <p class="fine">Practical aid only, not a certified health device. Net sizes are standard LLIN presets; check the label on your own net. 3D models generated with Aholo Lux3D. Open this page in a browser with WebGL to get a card for your own room.</p>
+        </div>
+        <p class="nwg-links"><a href="https://github.com/Mzee04/nogapnight">GitHub repo</a> · <a href="docs/NoGapNight-Report.pdf">Report PDF</a> · <span class="video-slot">[video coming]</span></p>
+      </div>
+    </div>
     </div>
 
     <aside id="panel">
@@ -68,7 +120,7 @@
       <header>
         <h1>🌙 No Gap Night</h1>
         <p class="tag">Hang your mosquito net with <b>no gaps</b>. Photo → Aholo Lux3D → 3D net check → carpenter card.</p>
-        <button class="chip ghost btn-journey jr-chip">📷 → 🧊 → 🥅 See the photo-to-net journey</button>
+        <button class="chip primary btn-journey jr-chip">📷 See my real photos → Lux3D models</button>
       </header>
 
       <section>
@@ -135,6 +187,7 @@
 
         <h3>Net</h3>
         <label>Standard net<select id="f-net"></select></label>
+        <p class="hint sources" id="net-sources">Sources: WHO PQ labels for <a href="https://extranet.who.int/prequal/sites/default/files/vcp-documents/WHOPAR-VC_003-003_DOL_20190329.pdf" target="_blank" rel="noopener">DCT Royal Guard</a>, <a href="https://extranet.who.int/prequal/sites/default/files/doc_parts/P-13227%20-%20part8v2%2020260715.pdf" target="_blank" rel="noopener">UNET G1</a>, and <a href="https://extranet.who.int/prequal/sites/default/files/doc_parts/p-00320-part8v0.pdf" target="_blank" rel="noopener">GreenNet</a>; <a href="https://bbnburundi.org/wp-content/uploads/2021/08/DEAS-455_2021-LLIN-Mosquito-nets-standard-1.pdf" target="_blank" rel="noopener">Draft East African Standard DEAS 455:2021</a> tables 5 and 6; <a href="https://safenetllin.com/product/" target="_blank" rel="noopener">SafeNet LLIN size table</a>. Check the label on your own net.</p>
         <div class="grid2">
           <label>Hem should reach<select id="f-tuck"><option value="mattress">Under the mattress</option><option value="floor">The floor</option></select></label>
           <label>Hook height<select id="f-hookmode"><option value="auto">Best height (auto)</option><option value="manual">I'll set it</option></select></label>
@@ -161,6 +214,13 @@
         </div>
       </section>
 
+
+      <section id="about">
+        <h2>About</h2>
+        <p>Mosquito nets only protect when they fully cover the sleeping place. Gaps and a poor fit let mosquitoes bite. The <a href="https://www.who.int/news-room/fact-sheets/detail/malaria" target="_blank" rel="noopener">World Health Organization</a> recommends using a mosquito net when sleeping where malaria is present, and lists insecticide-treated nets as a core malaria intervention.</p>
+        <p class="how">How it was built: phone photo → <a href="https://3d.aholo.ai/lux3d/home" target="_blank" rel="noopener">Aholo Lux3D</a> → GLB → this app.</p>
+        <p class="about-links"><a href="https://github.com/Mzee04/nogapnight" target="_blank" rel="noopener">GitHub repo</a> · <a href="docs/NoGapNight-Report.pdf">Report PDF</a> · <span class="video-slot">[video coming]</span></p>
+      </section>
       <footer>
         <p><b>Honest note:</b> a first estimate and a practical aid, not a certified health device. Net sizes are standard LLIN presets (check your net's label), and the drape is a geometric estimate, not cloth physics. Sleep under a treated net every night and fix holes.</p>
         <p>3D models made with <a href="https://www.aholo.ai/" target="_blank" rel="noopener">Aholo Lux3D</a></p>
@@ -178,7 +238,31 @@
     <div id="journey-body"></div>
   </dialog>
 
-  <noscript>No Gap Night needs JavaScript and WebGL.</noscript>
+  <noscript>No Gap Night needs JavaScript and WebGL. The photo-to-model images and a sample size card are in the GitHub repo and the report PDF.</noscript>
+  <script>
+    (function () {
+      function hasWebGL() {
+        try {
+          var c = document.createElement('canvas');
+          return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl')));
+        } catch (e) { return false; }
+      }
+      window.showNoWebGL = function () {
+        document.documentElement.classList.add('no-webgl');
+        var el = document.getElementById('no-webgl');
+        if (el) el.hidden = false;
+        var loading = document.getElementById('loading');
+        if (loading) { loading.hidden = true; loading.classList.add('done'); }
+        var onboard = document.getElementById('onboard');
+        if (onboard) onboard.hidden = true;
+      };
+      if (!hasWebGL()) window.showNoWebGL();
+    })();
+  </script>
   <script type="module" src="js/main.js"></script>
+  <script>
+    var m = document.querySelector('script[src="js/main.js"]');
+    if (m) m.addEventListener('error', function () { if (window.showNoWebGL) window.showNoWebGL(); });
+  </script>
 </body>
 </html>
