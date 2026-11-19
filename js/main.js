@@ -32,12 +32,12 @@ const PRESETS = {
     places: [place({ name: 'Family mattress', kind: 'floor', length: 183, width: 183, top: 20, sleepers: 3, x: 170, z: 150, net: 'r160', hookMode: 'manual', hook: 190 })] }),
   bed: () => ({ room: { width: 340, depth: 320, ceiling: 280 },
     places: [place({ name: 'Bed', kind: 'bed', length: 190, width: 135, top: 55, sleepers: 2, x: 170, z: 130, net: 'r130', hookMode: 'manual', hook: 200 })] }),
-  // Real Aholo Lux3D bed (Bed With Bedding). Size is a rough estimate.
+  // Real Aholo Lux3D bed (Bed With Bedding). Measured 3½ ft bed (107 × 190 cm).
   // Starts with a too-small net hung too high so the gaps glow red; Fix my room then fits it.
   luxbed: () => ({
     room: { width: 360, depth: 380, ceiling: 280 },
     places: [place({
-      name: 'My bed', kind: 'bed', length: 190, width: 100, top: 45, sleepers: 1,
+      name: 'My bed', kind: 'bed', length: 190, width: 107, top: 45, sleepers: 1,
       x: 180, z: 170, net: 'r100', hookMode: 'manual', hook: 230, tuck: 'mattress',
     })],
     model: { file: 'bed-lux3d.glb', name: 'Bed With Bedding (Lux3D)' },

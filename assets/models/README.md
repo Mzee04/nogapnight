@@ -50,7 +50,7 @@ Default size: 140 × 190 cm, mattress top about 50 cm (a rough estimate). The jo
 - `bed-lux3d.glb` — web-optimized copy used by the app and the **My bed (Lux3D)** scene (~4.1 MB; 1024 px JPEG textures, simplified mesh, `KHR_mesh_quantization`). Y-up, sitting on the floor, headboard at −Z (the head wall).
 - `bed-lux3d-original.glb` — the untouched Lux3D export (26.8 MB, ~484k triangles, 2048 px PNG textures). Not loaded by the app; kept so the source model is on hand.
 
-Lux3D named this model "Bed With Bedding". It is a single bed with a headboard, frame and a messy sheet. Default size in the manifest is 100 × 190 cm, mattress top about 45 cm (a rough estimate).
+Lux3D named this model "Bed With Bedding". It is a single bed with a headboard, frame and a messy sheet. Default size in the manifest is 107 × 190 cm (a 3½ ft bed), mattress top about 45 cm.
 
 ## Included: Wooden Bed, second view (Lux3D)
 

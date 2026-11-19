@@ -84,8 +84,8 @@ and the floor mattress beside it, both starting under a net that is too small an
 picks a fitting net for each place, sets the hook heights and slides the bed off the wall.
 
 **My bed (Lux3D)** in the Scene row loads `assets/models/bed-lux3d.glb`
-("Bed With Bedding" — a single bed with a headboard, frame and messy sheet), scaled to a rough estimate of
-100 × 190 cm, mattress top about 45 cm. The app uses a web-optimized copy (~4.1 MB). The original Lux3D export
+("Bed With Bedding" — a single bed with a headboard, frame and messy sheet), scaled to its real 3½ ft size,
+107 × 190 cm, mattress top about 45 cm. The app uses a web-optimized copy (~4.1 MB). The original Lux3D export
 is kept beside it as `bed-lux3d-original.glb` (26.8 MB) and is not loaded at runtime.
 
 ## Run it
